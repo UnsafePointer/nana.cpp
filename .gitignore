@@ -64,3 +64,4 @@
 # End of https://www.gitignore.io/api/c++,linux,visualstudiocode
 
 bin/*
+*.gb

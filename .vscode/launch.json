@@ -7,7 +7,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/main",
             "preLaunchTask": "Build C++ project",
-            "args": [],
+            "args": [
+                "tetris.gb"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
