@@ -28,6 +28,7 @@ private:
     uint8_t cpu16BitRegisterAdd(Register16Bit &r1, Register16Bit r2);
     uint8_t cpu16BitRegisterIncrement(Register16Bit &r);
     uint8_t cpu16BitRegisterDecrement(Register16Bit &r);
+    uint8_t cpu8BitRegisterSwap(Register8Bit &r);
     uint8_t cpu8BitSwapMemoryAddress(uint16_t address);
     uint8_t cpuDDA();
     uint8_t cpu8BitRegisterRLC(Register8Bit &r);
