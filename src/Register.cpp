@@ -8,12 +8,13 @@ uint16_t Register16Bit::value() {
 
 void Register16Bit::setValue(uint16_t value) {
     this->low.bits = value & 0xFF;
+    this->high.bits = value >> 8;
 }
 
 void Register16Bit::increment() {
-    this->setValue(this->value());
+    this->setValue(this->value() + 1);
 }
 
 void Register16Bit::decrement() {
-    this->setValue(this->value());
+    this->setValue(this->value() + 1);
 }

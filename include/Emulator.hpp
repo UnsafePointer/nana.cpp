@@ -3,10 +3,12 @@
 #include "Memory.hpp"
 
 class Emulator {
-public:
+private:
     CPU cpu;
-    Memory memory;
+    uint8_t executeNextOpCode();
 public:
     Emulator();
     ~Emulator();
+    Memory memory;
+    void emulateFrame();
 };

@@ -76,7 +76,7 @@ void Memory::writeMemory(uint16_t address, uint8_t data) {
     }
 }
 
-uint8_t Memory::readMemory(uint16_t address) {
+uint8_t Memory::readMemory8Bit(uint16_t address) {
     if (address >= 0x4000 && address <= 0x7FFF) {
         uint32_t bankAddress = address;
         bankAddress += (this->currentRomBank - 1) * RomBankSize;
@@ -94,6 +94,13 @@ uint8_t Memory::readMemory(uint16_t address) {
 
     uint8_t value = this->rom[address];
     return value;
+}
+
+uint16_t Memory::readMemory16Bit(uint16_t address) {
+    uint16_t high = this->readMemory8Bit(address + 1);
+    high <<= 8;
+    uint16_t low = this->readMemory8Bit(address);
+    return low | high;
 }
 
 void Memory::handleMemoryBanking(uint16_t address, uint8_t data) {
