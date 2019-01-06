@@ -9,6 +9,9 @@ int main(int argc, char const *argv[])
     }
     std::string gameArg = argv[1];
     Emulator emulator = Emulator();
-    emulator.memory.loadCartridge(gameArg);
+    emulator.memoryController.loadCartridge(gameArg);
+    while (true) {
+        emulator.emulateFrame();
+    }
     return 0;
 }

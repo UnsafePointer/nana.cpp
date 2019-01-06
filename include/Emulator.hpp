@@ -1,6 +1,6 @@
 #pragma once
 #include "CPU.hpp"
-#include "Memory.hpp"
+#include "MemoryController.hpp"
 
 class Emulator {
 private:
@@ -9,6 +9,6 @@ private:
 public:
     Emulator();
     ~Emulator();
-    Memory memory;
+    MemoryController memoryController;
     void emulateFrame();
 };

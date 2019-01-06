@@ -1,4 +1,4 @@
-#include "Memory.hpp"
+#include "MemoryController.hpp"
 #include <iostream>
 #include <fstream>
 #include "Utils.hpp"
@@ -10,15 +10,15 @@ const static uint16_t RamBankSize = 0x2000;
 const static uint16_t RomBankSize = 0x4000;
 const static uint16_t DMATransferAddress = 0xFF46;
 
-Memory::Memory() {
+MemoryController::MemoryController() {
     this->cartridgeType = ROMOnly;
 }
 
-Memory::~Memory() {
+MemoryController::~MemoryController() {
 
 }
 
-void Memory::loadCartridge(std::string filename) {
+void MemoryController::loadCartridge(std::string filename) {
     std::ifstream file (filename, std::ios::in|std::ios::binary|std::ios::ate);
     if (!file.is_open()) {
         exit(2);
@@ -46,7 +46,7 @@ void Memory::loadCartridge(std::string filename) {
     }
 }
 
-void Memory::writeMemory(uint16_t address, uint8_t data) {
+void MemoryController::writeMemory(uint16_t address, uint8_t data) {
     if (address <= 0x7FFF) {
         this->handleMemoryBanking(address, data);
         return;
@@ -76,7 +76,7 @@ void Memory::writeMemory(uint16_t address, uint8_t data) {
     }
 }
 
-uint8_t Memory::readMemory8Bit(uint16_t address) {
+uint8_t MemoryController::readMemory8Bit(uint16_t address) {
     if (address >= 0x4000 && address <= 0x7FFF) {
         uint32_t bankAddress = address;
         bankAddress += (this->currentRomBank - 1) * RomBankSize;
@@ -96,14 +96,14 @@ uint8_t Memory::readMemory8Bit(uint16_t address) {
     return value;
 }
 
-uint16_t Memory::readMemory16Bit(uint16_t address) {
+uint16_t MemoryController::readMemory16Bit(uint16_t address) {
     uint16_t high = this->readMemory8Bit(address + 1);
     high <<= 8;
     uint16_t low = this->readMemory8Bit(address);
     return low | high;
 }
 
-void Memory::handleMemoryBanking(uint16_t address, uint8_t data) {
+void MemoryController::handleMemoryBanking(uint16_t address, uint8_t data) {
     if (address <= 0x2000) {
         if (this->cartridgeType != ROMOnly) {
             this->enableRamBanking(address, data);
@@ -127,7 +127,7 @@ void Memory::handleMemoryBanking(uint16_t address, uint8_t data) {
     }
 }
 
-void Memory::enableRamBanking(uint16_t address, uint8_t data) {
+void MemoryController::enableRamBanking(uint16_t address, uint8_t data) {
     if (this->cartridgeType == MBC2) {
         if (testBit(address, 4)) {
             return;
@@ -137,7 +137,7 @@ void Memory::enableRamBanking(uint16_t address, uint8_t data) {
     this->ramBankEnabled = (data & 0xF) == 0xA;
 }
 
-void Memory::changeLowRomBank(uint8_t data) {
+void MemoryController::changeLowRomBank(uint8_t data) {
     if (this->cartridgeType == MBC2) {
         this->currentRomBank = data & 0xF;
         if (this->currentRomBank == 0) {
@@ -153,7 +153,7 @@ void Memory::changeLowRomBank(uint8_t data) {
     }
 }
 
-void Memory::changeHighRomBank(uint8_t data) {
+void MemoryController::changeHighRomBank(uint8_t data) {
     this->currentRomBank &= 31;
     data &= 224;
     this->currentRomBank |= data;
@@ -162,11 +162,11 @@ void Memory::changeHighRomBank(uint8_t data) {
     }
 }
 
-void Memory::changeRamBank(uint8_t data) {
+void MemoryController::changeRamBank(uint8_t data) {
     this->currentRamBank = data & 0x3;
 }
 
-void Memory::selectMemoryBankingMode(uint8_t data) {
+void MemoryController::selectMemoryBankingMode(uint8_t data) {
     if ((data & 0x1) == 0) {
         this->romBankEnabled = true;
     } else {

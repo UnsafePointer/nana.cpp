@@ -1,4 +1,5 @@
 #include "Emulator.hpp"
+#include <iostream>
 
 const static uint64_t MaxCyclesPerSecond = 4194304;
 const static uint64_t MaxCyclesPerEmulationCycle = MaxCyclesPerSecond / 60;
@@ -18,13 +19,14 @@ void Emulator::emulateFrame() {
 }
 
 uint8_t Emulator::executeNextOpCode() {
-    uint8_t opCode = this->memory.readMemory8Bit(this->cpu.programCounter.value());
+    uint8_t opCode = this->memoryController.readMemory8Bit(this->cpu.programCounter.value());
     uint8_t cycles = 0;
     if (this->cpu.halted) {
         cycles = 4;
     } else {
         this->cpu.programCounter.increment();
         cycles = this->cpu.executeOpCode(opCode);
+        std::cout << "Executing OP:" << std::hex << (int)opCode << std::endl;
     }
 
     if (this->cpu.pendingDisableInterrupts && opCode != 0xF3) {

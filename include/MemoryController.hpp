@@ -8,7 +8,7 @@ enum cartridge_type_t {
     MBC2 = 2,
 };
 
-class Memory {
+class MemoryController {
 private:
     uint8_t cartridge[0x200000];
     uint8_t ram[0x10000];
@@ -26,8 +26,8 @@ private:
     void changeRamBank(uint8_t data);
     void selectMemoryBankingMode(uint8_t data);
 public:
-    Memory();
-    ~Memory();
+    MemoryController();
+    ~MemoryController();
 
     void loadCartridge(std::string filename);
     void writeMemory(uint16_t address, uint8_t data);

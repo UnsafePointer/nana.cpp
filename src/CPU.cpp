@@ -201,9 +201,9 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterMemoryWrite(this->hl.value(), this->hl.low);
 	}
 	case 0x36: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
-		this->memory.writeMemory(this->hl.value(), value);
+		this->memoryController.writeMemory(this->hl.value(), value);
 		return 12;
 	}
 	// LD A,n
@@ -214,15 +214,15 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterMemoryAddressLoad(this->af.high, this->de.value());
 	}
 	case 0xFA: {
-		uint16_t address = this->memory.readMemory16Bit(this->programCounter.value());
+		uint16_t address = this->memoryController.readMemory16Bit(this->programCounter.value());
 		this->programCounter.increment();
 		this->programCounter.increment();
-		uint8_t value = this->memory.readMemory8Bit(address);
+		uint8_t value = this->memoryController.readMemory8Bit(address);
 		this->af.high.bits = value;
 		return 16;
 	}
 	case 0x3E:{
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		this->af.high.bits = value;
 		return 8;
@@ -256,10 +256,10 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterMemoryWrite(this->hl.value(), this->af.high);
 	}
 	case 0xEA: {
-		uint16_t address = this->memory.readMemory16Bit(this->programCounter.value());
+		uint16_t address = this->memoryController.readMemory16Bit(this->programCounter.value());
 		this->programCounter.increment();
 		this->programCounter.increment();
-		this->memory.writeMemory(address, this->af.high.bits);
+		this->memoryController.writeMemory(address, this->af.high.bits);
 		return 16;
 	}
 	// LD A,(C)
@@ -304,18 +304,18 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 	}
 	// LDH (n),A
 	case 0xE0: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint16_t address = 0xFF00 + value;
-		this->memory.writeMemory(address, this->af.high.bits);
+		this->memoryController.writeMemory(address, this->af.high.bits);
 		return 12;
 	}
 	// LDH A,(n)
 	case 0xF0: {
-		uint8_t addressValue = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t addressValue = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint16_t address = 0xFF00 + addressValue;
-		uint8_t value = this->memory.readMemory8Bit(address);
+		uint8_t value = this->memoryController.readMemory8Bit(address);
 		this->af.high.bits = value;
 		return 12;
 	}
@@ -341,7 +341,7 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 	// LD HL,SP+n
 	// LDHL SP,n
 	case 0xF8: {
-		int8_t signedValue = this->memory.readMemory8Bit(this->programCounter.value());
+		int8_t signedValue = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		this->clearFlagZ();
 		this->clearFlagN();
@@ -366,12 +366,12 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 	}
 	// LD (nn),SP
 	case 0x08: {
-		uint16_t value = this->memory.readMemory16Bit(this->programCounter.value());
+		uint16_t value = this->memoryController.readMemory16Bit(this->programCounter.value());
 		this->programCounter.increment();
 		this->programCounter.increment();
-		this->memory.writeMemory(value, this->stackPointer.low.bits);
+		this->memoryController.writeMemory(value, this->stackPointer.low.bits);
 		value++;
-		this->memory.writeMemory(value, this->stackPointer.high.bits);
+		this->memoryController.writeMemory(value, this->stackPointer.high.bits);
 		return 20;
 	}
 	// PUSH nn
@@ -432,12 +432,12 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterAdd(this->af.high, this->hl.low.bits, false);
 	}
 	case 0x86: {
-		uint8_t cycles = this->cpu8BitRegisterAdd(this->af.high, this->memory.readMemory8Bit(this->hl.value()), false);
+		uint8_t cycles = this->cpu8BitRegisterAdd(this->af.high, this->memoryController.readMemory8Bit(this->hl.value()), false);
 		cycles += 4; // 8
 		return cycles;
 	}
 	case 0xC6: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitRegisterAdd(this->af.high, value, false);
 		cycles += 4; // 8
@@ -466,12 +466,12 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterAdd(this->af.high, this->hl.low.bits, true);
 	}
 	case 0x8E: {
-		uint8_t cycles = this->cpu8BitRegisterAdd(this->af.high, this->memory.readMemory8Bit(this->hl.value()), true);
+		uint8_t cycles = this->cpu8BitRegisterAdd(this->af.high, this->memoryController.readMemory8Bit(this->hl.value()), true);
 		cycles += 4; // 8
 		return cycles;
 	}
 	case 0xCE: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitRegisterAdd(this->af.high, value, true);
 		cycles += 4; // 8
@@ -500,12 +500,12 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterSubtract(this->af.high, this->hl.low.bits, false);
 	}
 	case 0x96: {
-		uint8_t cycles = this->cpu8BitRegisterSubtract(this->af.high, this->memory.readMemory8Bit(this->hl.value()), false);
+		uint8_t cycles = this->cpu8BitRegisterSubtract(this->af.high, this->memoryController.readMemory8Bit(this->hl.value()), false);
 		cycles += 4; // 8
 		return cycles;
 	}
 	case 0xD6: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitRegisterSubtract(this->af.high, value, false);
 		cycles += 4; // 8
@@ -534,12 +534,12 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterSubtract(this->af.high, this->hl.low.bits, true);
 	}
 	case 0x9E: {
-		uint8_t cycles = this->cpu8BitRegisterSubtract(this->af.high, this->memory.readMemory8Bit(this->hl.value()), true);
+		uint8_t cycles = this->cpu8BitRegisterSubtract(this->af.high, this->memoryController.readMemory8Bit(this->hl.value()), true);
 		cycles += 4; // 8
 		return cycles;
 	}
 	case 0xDE: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitRegisterSubtract(this->af.high, value, true);
 		cycles += 4; // 8
@@ -568,13 +568,13 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitAnd(this->hl.low.bits);
 	}
 	case 0xA6: {
-		uint8_t value = this->memory.readMemory8Bit(this->hl.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->hl.value());
 		uint8_t cycles = this->cpu8BitAnd(value);
 		cycles += 4;
 		return cycles;
 	}
 	case 0xE6: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitAnd(value);
 		cycles += 4;
@@ -603,13 +603,13 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitOr(this->hl.low.bits);
 	}
 	case 0xB6:{
-		uint8_t value = this->memory.readMemory8Bit(this->hl.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->hl.value());
 		uint8_t cycles = this->cpu8BitOr(value);
 		cycles += 4;
 		return cycles;
 	}
 	case 0xF6: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitOr(value);
 		cycles += 4;
@@ -638,13 +638,13 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitXor(this->hl.low.bits);
 	}
 	case 0xAE: {
-		uint8_t value = this->memory.readMemory8Bit(this->hl.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->hl.value());
 		uint8_t cycles = this->cpu8BitXor(value);
 		cycles += 4;
 		return cycles;
 	}
 	case 0xEE: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitXor(value);
 		cycles += 4;
@@ -673,13 +673,13 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitCompare(this->hl.low.bits);
 	}
 	case 0xBE: {
-		uint8_t value = this->memory.readMemory8Bit(this->hl.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->hl.value());
 		uint8_t cycles = this->cpu8BitCompare(value);
 		cycles += 4;
 		return cycles;
 	}
 	case 0xFE: {
-		uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		uint8_t cycles = this->cpu8BitCompare(value);
 		cycles += 4;
@@ -751,7 +751,7 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 	}
 	// ADD SP,n
 	case 0xE8: {
-		int8_t signedValue = this->memory.readMemory8Bit(this->programCounter.value());
+		int8_t signedValue = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		this->clearFlagZ();
 		this->clearFlagN();
@@ -801,7 +801,7 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 	}
 	// Extended Instruction Set
 	case 0xCB: {
-		uint8_t code = this->memory.readMemory8Bit(this->programCounter.value());
+		uint8_t code = this->memoryController.readMemory8Bit(this->programCounter.value());
 		this->programCounter.increment();
 		return this->executeExtendedOpCode(code);
 	}
@@ -887,7 +887,7 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 	}
 	// JP nn
 	case 0xC3: {
-		uint16_t address = this->memory.readMemory16Bit(this->programCounter.value());
+		uint16_t address = this->memoryController.readMemory16Bit(this->programCounter.value());
 		return this->cpu8BitJump(address);
 	}
 	// JP cc,nn
@@ -994,7 +994,7 @@ uint8_t CPU::executeOpCode(uint8_t opCode) {
 }
 
 uint8_t CPU::cpu8BitRegisterMemoryLoad(Register8Bit &r) {
-    uint8_t value = this->memory.readMemory8Bit(this->programCounter.value());
+    uint8_t value = this->memoryController.readMemory8Bit(this->programCounter.value());
 	r.bits = value;
 	this->programCounter.increment();
 	return 8;
@@ -1006,17 +1006,17 @@ uint8_t CPU::cpu8BitRegisterLoad(Register8Bit &r, Register8Bit v) {
 }
 
 uint8_t CPU::cpu8BitRegisterMemoryWrite(uint16_t address, Register8Bit v) {
-    this->memory.writeMemory(address, v.bits);
+    this->memoryController.writeMemory(address, v.bits);
 	return 8;
 }
 
 uint8_t CPU::cpu8BitRegisterMemoryAddressLoad(Register8Bit &r, uint16_t address) {
-    r.bits = this->memory.readMemory8Bit(address);
+    r.bits = this->memoryController.readMemory8Bit(address);
 	return 8;
 }
 
 uint8_t CPU::cpu16BitRegisterMemoryLoad(Register16Bit &r) {
-    uint16_t value = this->memory.readMemory16Bit(this->programCounter.value());
+    uint16_t value = this->memoryController.readMemory16Bit(this->programCounter.value());
 	this->programCounter.increment();
 	this->programCounter.increment();
 	r.setValue(value);
@@ -1129,9 +1129,9 @@ uint8_t CPU::cpu8BitRegisterIncrement(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitIncrementMemoryAddress(uint16_t address) {
-    uint8_t previous = this->memory.readMemory8Bit(address);
+    uint8_t previous = this->memoryController.readMemory8Bit(address);
 	uint8_t current = previous + 1;
-	this->memory.writeMemory(address, current);
+	this->memoryController.writeMemory(address, current);
 	if (current == 0x0) {
 		this->setFlagZ();
 	} else {
@@ -1164,9 +1164,9 @@ uint8_t CPU::cpu8BitRegisterDecrement(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitDecrementMemoryAddress(uint16_t address) {
-	uint8_t previous = this->memory.readMemory8Bit(address);
+	uint8_t previous = this->memoryController.readMemory8Bit(address);
 	uint8_t current = previous - 1;
-	this->memory.writeMemory(address, current);
+	this->memoryController.writeMemory(address, current);
 	if (current == 0x0) {
 		this->setFlagZ();
 	} else {
@@ -1221,9 +1221,9 @@ uint8_t CPU::cpu8BitRegisterSwap(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitSwapMemoryAddress(uint16_t address)  {
-	uint8_t value = this->memory.readMemory8Bit(address);
+	uint8_t value = this->memoryController.readMemory8Bit(address);
 	uint8_t result = (value&0xF0)>>4 | (value&0x0F)<<4;
-	this->memory.writeMemory(address, result);
+	this->memoryController.writeMemory(address, result);
 	this->clearAllFlags();
 	if (result == 0x0) {
 		this->setFlagZ();
@@ -1324,7 +1324,7 @@ uint8_t CPU::cpu8BitRegisterRR(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitRegisterRLCMemoryAddress(uint16_t address) {
-	uint8_t value = this->memory.readMemory8Bit(address);
+	uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool test = testBit(value, 7);
 	value <<= 1;
 	this->clearAllFlags();
@@ -1335,12 +1335,12 @@ uint8_t CPU::cpu8BitRegisterRLCMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
     return 16;
 }
 
 uint8_t CPU::cpu8BitRegisterRLMemoryAddress(uint16_t address) {
-	uint8_t value = this->memory.readMemory8Bit(address);
+	uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool testCarry = this->flagC();
 	bool test = testBit(value, 7);
 	value <<= 1;
@@ -1354,12 +1354,12 @@ uint8_t CPU::cpu8BitRegisterRLMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
     return 16;
 }
 
 uint8_t CPU::cpu8BitRegisterRRCMemoryAddress(uint16_t address) {
-    uint8_t value = this->memory.readMemory8Bit(address);
+    uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool test = testBit(value, 0);
 	value >>= 1;
 	this->clearAllFlags();
@@ -1370,12 +1370,12 @@ uint8_t CPU::cpu8BitRegisterRRCMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
 	return 16;
 }
 
 uint8_t CPU::cpu8BitRegisterRRMemoryAddress(uint16_t address) {
-	uint8_t value = this->memory.readMemory8Bit(address);
+	uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool testCarry = this->flagC();
 	bool test = testBit(value, 0);
 	value >>= 1;
@@ -1389,7 +1389,7 @@ uint8_t CPU::cpu8BitRegisterRRMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
     return 16;
 }
 
@@ -1406,7 +1406,7 @@ uint8_t CPU::cpu8BitRegisterSLA(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitRegisterSLAMemoryAddress(uint16_t address) {
-    uint8_t value = this->memory.readMemory8Bit(address);
+    uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool test = testBit(value, 7);
 	value <<= 1;
 	this->clearAllFlags();
@@ -1416,7 +1416,7 @@ uint8_t CPU::cpu8BitRegisterSLAMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
 	return 16;
 }
 
@@ -1438,7 +1438,7 @@ uint8_t CPU::cpu8BitRegisterSRA(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitRegisterSRAMemoryAddress(uint16_t address) {
-    uint8_t value = this->memory.readMemory8Bit(address);
+    uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool testMSB = testBit(value, 7);
 	bool testLSB = testBit(value, 0);
 	value >>= 1;
@@ -1452,7 +1452,7 @@ uint8_t CPU::cpu8BitRegisterSRAMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
 	return 16;
 }
 
@@ -1470,7 +1470,7 @@ uint8_t CPU::cpu8BitRegisterSRL(Register8Bit &r) {
 }
 
 uint8_t CPU::cpu8BitRegisterSRLMemoryAddress(uint16_t address) {
-	uint8_t value = this->memory.readMemory8Bit(address);
+	uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool test = testBit(value, 0);
 	value >>= 1;
 	this->clearAllFlags();
@@ -1480,7 +1480,7 @@ uint8_t CPU::cpu8BitRegisterSRLMemoryAddress(uint16_t address) {
 	if (value == 0x0) {
 		this->setFlagZ();
 	}
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
     return 16;
 }
 
@@ -1497,7 +1497,7 @@ uint8_t CPU::cpu8BitRegisterBit(Register8Bit &r, uint8_t position) {
 }
 
 uint8_t CPU::cpu8BitRegisterBitMemoryAddress(uint16_t address, uint8_t position) {
-    uint8_t value = this->memory.readMemory8Bit(address);
+    uint8_t value = this->memoryController.readMemory8Bit(address);
 	bool test = testBit(value, position);
 	if (test) {
 		this->clearFlagZ();
@@ -1516,9 +1516,9 @@ uint8_t CPU::cpu8BitRegisterSet(Register8Bit &r, uint8_t position) {
 }
 
 uint8_t CPU::cpu8BitRegisterSetMemoryAddress(uint16_t address, uint8_t position) {
-    uint8_t value = this->memory.readMemory8Bit(address);
+    uint8_t value = this->memoryController.readMemory8Bit(address);
 	value = setBit(value, position);
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
 	return 16;
 }
 
@@ -1529,9 +1529,9 @@ uint8_t CPU::cpu8BitRegisterReset(Register8Bit &r, uint8_t position) {
 }
 
 uint8_t CPU::cpu8BitRegisterResetMemoryAddress(uint16_t address, uint8_t position) {
-    uint8_t value = this->memory.readMemory8Bit(address);
+    uint8_t value = this->memoryController.readMemory8Bit(address);
 	value = clearBit(value, position);
-	this->memory.writeMemory(address, value);
+	this->memoryController.writeMemory(address, value);
 	return 16;
 }
 
@@ -1541,7 +1541,7 @@ uint8_t CPU::cpu8BitJump(uint16_t address) {
 }
 
 uint8_t CPU::cpu8BitJumpConditional(bool condition) {
-    uint16_t address = this->memory.readMemory16Bit(this->programCounter.value());
+    uint16_t address = this->memoryController.readMemory16Bit(this->programCounter.value());
 	this->programCounter.increment();
 	this->programCounter.increment();
 	if (condition) {
@@ -1551,7 +1551,7 @@ uint8_t CPU::cpu8BitJumpConditional(bool condition) {
 }
 
 uint8_t CPU::cpu8BitJumpAddConditional(bool condition) {
-    int8_t signedValue = this->memory.readMemory8Bit(this->programCounter.value());
+    int8_t signedValue = this->memoryController.readMemory8Bit(this->programCounter.value());
 	this->programCounter.increment();
 	uint32_t address = this->programCounter.value() + signedValue;
 	address &= 0x00FFFF;
@@ -1562,7 +1562,7 @@ uint8_t CPU::cpu8BitJumpAddConditional(bool condition) {
 }
 
 uint8_t CPU::cpu8BitCall(bool condition) {
-    uint16_t address = this->memory.readMemory16Bit(this->programCounter.value());
+    uint16_t address = this->memoryController.readMemory16Bit(this->programCounter.value());
 	this->programCounter.increment();
 	this->programCounter.increment();
 	if (condition) {
@@ -1653,13 +1653,13 @@ void CPU::pushIntoStack(uint16_t value) {
 	uint8_t low = value & 0xFF;
 	uint8_t high = value >> 8;
 	this->stackPointer.decrement();
-	this->memory.writeMemory(this->stackPointer.value(), high);
+	this->memoryController.writeMemory(this->stackPointer.value(), high);
 	this->stackPointer.decrement();
-	this->memory.writeMemory(this->stackPointer.value(), low);
+	this->memoryController.writeMemory(this->stackPointer.value(), low);
 }
 
 uint16_t CPU::popFromStack() {
-	uint16_t value = this->memory.readMemory16Bit(this->stackPointer.value());
+	uint16_t value = this->memoryController.readMemory16Bit(this->stackPointer.value());
 	this->stackPointer.increment();
 	this->stackPointer.increment();
 	return value;
