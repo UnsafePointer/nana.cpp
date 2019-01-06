@@ -15,6 +15,7 @@ void Emulator::emulateFrame() {
     while (cyclesThisUpdate < MaxCyclesPerEmulationCycle) {
         uint8_t cycles = this->executeNextOpCode();
         cyclesThisUpdate += cycles;
+        this->timerController.updateTimers(cycles);
     }
 }
 

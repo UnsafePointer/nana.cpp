@@ -76,6 +76,10 @@ void MemoryController::writeMemory(uint16_t address, uint8_t data) {
     }
 }
 
+void MemoryController::writeMemoryAvoidingTraps(uint16_t address, uint8_t data) {
+    this->rom[address] = data;
+}
+
 uint8_t MemoryController::readMemory8Bit(uint16_t address) {
     if (address >= 0x4000 && address <= 0x7FFF) {
         uint32_t bankAddress = address;
