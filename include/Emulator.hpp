@@ -1,10 +1,10 @@
 #pragma once
-#include "CPU.hpp"
+#include "CPUController.hpp"
 #include "MemoryController.hpp"
 
 class Emulator {
 private:
-    CPU cpu;
+    CPUController cpuController;
     uint8_t executeNextOpCode();
 public:
     Emulator();

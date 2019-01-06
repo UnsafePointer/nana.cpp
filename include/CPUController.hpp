@@ -2,7 +2,7 @@
 #include "Register.hpp"
 #include "MemoryController.hpp"
 
-class CPU {
+class CPUController {
 private:
     Register16Bit af;
     Register16Bit bc;
@@ -80,7 +80,7 @@ public:
     bool disableInterrupts;
     bool pendingDisableInterrupts;
     bool pendingEnableInterrupts;
-    CPU();
-    ~CPU();
+    CPUController();
+    ~CPUController();
     uint8_t executeOpCode(uint8_t opCode);
 };
