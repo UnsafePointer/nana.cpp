@@ -25,6 +25,7 @@ private:
     void changeHighRomBank(uint8_t data);
     void changeRamBank(uint8_t data);
     void selectMemoryBankingMode(uint8_t data);
+    void dmaTransfer(uint8_t data);
 public:
     MemoryController();
     ~MemoryController();

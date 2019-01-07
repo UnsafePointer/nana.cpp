@@ -70,7 +70,7 @@ void MemoryController::writeMemory(uint16_t address, uint8_t data) {
     } else if (address == CurrentScanlineRegisterAddress) {
         this->rom[address] = 0;
     } else if (address == DMATransferAddress) {
-        // TODO: this->dmaTransfer(data);
+        this->dmaTransfer(data);
     } else {
         this->rom[address] = data;
     }
@@ -178,5 +178,13 @@ void MemoryController::selectMemoryBankingMode(uint8_t data) {
     }
     if (this->romBankEnabled) {
         this->currentRamBank = 0;
+    }
+}
+
+void MemoryController::dmaTransfer(uint8_t data) {
+    uint16_t address = data << 8;
+    for (uint8_t i = 0; i < 0xA0; i++) {
+        uint8_t data = this->readMemory8Bit(address + i);
+        this->writeMemory(0xFE00+i, data);
     }
 }
