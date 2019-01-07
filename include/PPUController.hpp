@@ -3,9 +3,9 @@
 
 const static uint16_t CurrentScanlineRegisterAddress = 0xFF44;
 
-class PPU {
+class PPUController {
 
 public:
-    PPU();
-    ~PPU();
+    PPUController();
+    ~PPUController();
 };

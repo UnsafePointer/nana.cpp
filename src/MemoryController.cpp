@@ -3,7 +3,7 @@
 #include <fstream>
 #include "Utils.hpp"
 #include "TimerController.hpp"
-#include "PPU.hpp"
+#include "PPUController.hpp"
 #include "JoypadController.hpp"
 
 const static uint16_t RamBankSize = 0x2000;
