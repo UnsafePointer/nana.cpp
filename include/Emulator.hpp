@@ -7,6 +7,7 @@ class Emulator {
 private:
     CPUController cpuController;
     TimerController timerController;
+    InterruptController interruptController;
     uint8_t executeNextOpCode();
 public:
     Emulator();
