@@ -71,7 +71,6 @@ private:
     void clearFlagH();
     void clearFlagC();
     void clearAllFlags();
-    void pushIntoStack(uint16_t value);
     uint16_t popFromStack();
     uint8_t executeExtendedOpCode(uint8_t opCode);
 public:
@@ -83,4 +82,5 @@ public:
     CPUController();
     ~CPUController();
     uint8_t executeOpCode(uint8_t opCode);
+    void pushIntoStack(uint16_t value);
 };

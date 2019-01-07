@@ -32,7 +32,7 @@ void TimerController::updateTimers(uint8_t cycles) {
     if (timerCounter == 255) {
         uint8_t timerModulator = this->memoryController.readMemory8Bit(timerModulatorAddress);
         this->memoryController.writeMemory(TimerCounterAddress, timerModulator);
-        // TODO: request interrupt 2
+        this->interruptController.requestInterrupt(2);
     } else {
         this->memoryController.writeMemory(TimerCounterAddress, timerCounter+1);
     }
