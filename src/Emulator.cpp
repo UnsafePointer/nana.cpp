@@ -16,6 +16,7 @@ void Emulator::emulateFrame() {
         uint8_t cycles = this->executeNextOpCode();
         cyclesThisUpdate += cycles;
         this->timerController.updateTimers(cycles);
+        this->ppuController.updateScreen(cycles);
         this->interruptController.executeInterrupts();
     }
 }
