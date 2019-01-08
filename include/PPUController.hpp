@@ -18,7 +18,9 @@ private:
     void renderSprites();
     void updateLCDStatus();
     bool isLCDEnabled();
+    uint8_t getColor(uint8_t color, uint16_t address);
 public:
+    uint8_t screenData[160][144][3];
     PPUController();
     ~PPUController();
     void updateScreen(uint8_t cycles);
