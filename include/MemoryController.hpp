@@ -3,6 +3,7 @@
 #include <string>
 
 class JoypadController;
+class TimerController;
 
 enum cartridge_type_t {
     ROMOnly = 0,
@@ -33,6 +34,7 @@ public:
     ~MemoryController();
 
     JoypadController *joypadController;
+    TimerController *timerController;
 
     void loadCartridge(std::string filename);
     void writeMemory(uint16_t address, uint8_t data);

@@ -102,7 +102,12 @@ void MemoryController::writeMemory(uint16_t address, uint8_t data) {
     } else if (address == DividerRegisterAddress) {
         this->rom[address] = 0;
     } else if (address == TimerControllerAddress) {
-        // TODO: Handle clock frequency change
+        uint8_t currentClockFrequency = this->timerController->clockFrequency();
+        this->rom[address] = data;
+        uint8_t newClockFrequency = this->timerController->clockFrequency();
+        if (currentClockFrequency != newClockFrequency) {
+            this->timerController->setTimerCycleCounter();
+        }
     } else if (address == CurrentScanlineRegisterAddress) {
         this->rom[address] = 0;
     } else if (address == DMATransferAddress) {

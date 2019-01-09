@@ -19,6 +19,7 @@ int main(int argc, char const *argv[])
     InterruptController interruptController = InterruptController(memoryController, cpuController);
     PPUController ppuController = PPUController(memoryController, interruptController);
     TimerController timerController = TimerController(memoryController, interruptController);
+    memoryController.timerController = &timerController;
     JoypadController joypadController = JoypadController(interruptController, memoryController);
     memoryController.joypadController = &joypadController;
     Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, memoryController);
