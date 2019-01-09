@@ -2,7 +2,7 @@
 #include "Utils.hpp"
 
 JoypadController::JoypadController(InterruptController &interruptController, MemoryController &memoryController) : interruptController(&interruptController), memoryController(&memoryController) {
-
+    this->joypadState = 0xFF;
 }
 
 JoypadController::~JoypadController() {

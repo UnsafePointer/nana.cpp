@@ -2,7 +2,8 @@
 #include "Utils.hpp"
 
 TimerController::TimerController(MemoryController &memoryController, InterruptController &interruptController) : memoryController(&memoryController), interruptController(&interruptController)  {
-
+    this->dividerRegisterCyclesCounter = 0;
+    this->timerCyclesCounter = 0;
 }
 
 TimerController::~TimerController() {

@@ -4,12 +4,15 @@
 const static uint64_t MaxCyclesPerSecond = 4194304;
 const static uint64_t MaxCyclesPerEmulationCycle = MaxCyclesPerSecond / 60;
 
-Emulator::Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController) : cpuController(&cpuController), timerController(&timerController), interruptController(&interruptController), ppuController(&ppuController) {
+Emulator::Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, MemoryController &memoryController) : cpuController(&cpuController), timerController(&timerController), interruptController(&interruptController), ppuController(&ppuController), memoryController(&memoryController) {
 
 }
 
 Emulator::~Emulator() {
 
+}
+
+void Emulator::initialize() {
 }
 
 void Emulator::emulateFrame() {
@@ -24,7 +27,7 @@ void Emulator::emulateFrame() {
 }
 
 uint8_t Emulator::executeNextOpCode() {
-    uint8_t opCode = this->memoryController.readMemory8Bit(this->cpuController->programCounter.value());
+    uint8_t opCode = this->memoryController->readMemory8Bit(this->cpuController->programCounter.value());
     uint8_t cycles = 0;
     if (this->cpuController->halted) {
         cycles = 4;

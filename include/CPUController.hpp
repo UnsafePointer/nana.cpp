@@ -4,11 +4,11 @@
 
 class CPUController {
 private:
+    MemoryController *memoryController;
     Register16Bit af;
     Register16Bit bc;
     Register16Bit de;
     Register16Bit hl;
-    MemoryController memoryController;
     Register16Bit stackPointer;
     uint8_t cpu8BitRegisterMemoryLoad(Register8Bit &r);
     uint8_t cpu8BitRegisterLoad(Register8Bit &r, Register8Bit v);
@@ -79,7 +79,7 @@ public:
     bool disableInterrupts;
     bool pendingDisableInterrupts;
     bool pendingEnableInterrupts;
-    CPUController();
+    CPUController(MemoryController &memoryController);
     ~CPUController();
     uint8_t executeOpCode(uint8_t opCode);
     void pushIntoStack(uint16_t value);

@@ -12,8 +12,9 @@ private:
     PPUController *ppuController;
     uint8_t executeNextOpCode();
 public:
-    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController);
+    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, MemoryController &memoryController);
     ~Emulator();
-    MemoryController memoryController;
+    MemoryController *memoryController;
+    void initialize();
     void emulateFrame();
 };

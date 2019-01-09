@@ -15,14 +15,14 @@ int main(int argc, char const *argv[])
     }
     std::string gameArg = argv[1];
     MemoryController memoryController = MemoryController();
-    CPUController cpuController = CPUController();
+    CPUController cpuController = CPUController(memoryController);
     InterruptController interruptController = InterruptController(memoryController, cpuController);
     PPUController ppuController = PPUController(memoryController, interruptController);
     TimerController timerController = TimerController(memoryController, interruptController);
     JoypadController joypadController = JoypadController(interruptController, memoryController);
     memoryController.joypadController = &joypadController;
-    Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController);
-    emulator.memoryController.loadCartridge(gameArg);
+    Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, memoryController);
+    emulator.memoryController->loadCartridge(gameArg);
     while (true) {
         emulator.emulateFrame();
     }
