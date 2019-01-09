@@ -10,12 +10,12 @@ const static uint16_t TimerControllerAddress = 0xFF07;
 
 class TimerController {
 private:
-    MemoryController memoryController;
-    InterruptController interruptController;
+    MemoryController *memoryController;
+    InterruptController *interruptController;
     int16_t timerCyclesCounter;
     uint16_t dividerRegisterCyclesCounter;
 public:
-    TimerController();
+    TimerController(MemoryController &memoryController, InterruptController &interruptController);
     ~TimerController();
     bool isTimerEnabled();
     void updateTimers(uint8_t cycles);

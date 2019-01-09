@@ -11,8 +11,8 @@ const static uint16_t CoincidenceFlagAddress = 0xFF45;
 class PPUController {
 private:
     int16_t scanlineRenderCyclesCounter;
-    MemoryController memoryController;
-    InterruptController interruptController;
+    MemoryController *memoryController;
+    InterruptController *interruptController;
     void drawScanline();
     void renderTiles();
     void renderSprites();
@@ -21,7 +21,7 @@ private:
     uint8_t getColor(uint8_t color, uint16_t address);
 public:
     uint8_t screenData[160][144][3];
-    PPUController();
+    PPUController(MemoryController &memoryController, InterruptController &interruptController);
     ~PPUController();
     void updateScreen(uint8_t cycles);
 };

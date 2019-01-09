@@ -8,11 +8,11 @@ const static uint16_t InterruptEnabledRegisterAddress = 0xFFFF;
 
 class InterruptController {
 private:
-    MemoryController memoryController;
-    CPUController cpuController;
+    MemoryController *memoryController;
+    CPUController *cpuController;
     void executeInterrupt(uint8_t interruptId);
 public:
-    InterruptController();
+    InterruptController(MemoryController &memoryController, CPUController &cpuController);
     ~InterruptController();
     void requestInterrupt(uint8_t interruptId);
     void clearRequestInterrupt(uint8_t interruptId);

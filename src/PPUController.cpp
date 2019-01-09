@@ -6,7 +6,7 @@ const static uint16_t viewingAreaPositionXAddress = 0xFF43;
 const static uint16_t windowPositionYAddress = 0xFF4A;
 const static uint16_t windowPositionXAddress = 0xFF4B;
 
-PPUController::PPUController() {
+PPUController::PPUController(MemoryController &memoryController, InterruptController &interruptController) : memoryController(&memoryController), interruptController(&interruptController) {
 
 }
 
@@ -15,7 +15,7 @@ PPUController::~PPUController() {
 }
 
 void PPUController::drawScanline() {
-    uint8_t value = this->memoryController.readMemory8Bit(LCDControllerAddress);
+    uint8_t value = this->memoryController->readMemory8Bit(LCDControllerAddress);
     if (testBit(value, 0)) {
         this->renderTiles();
     }
@@ -29,13 +29,13 @@ void PPUController::renderTiles() {
     uint16_t backgroundMemory = 0;
     bool useUnsigned = false;
 
-    uint8_t viewingAreaPositionY = this->memoryController.readMemory8Bit(viewingAreaPositionYAddress);
-    uint8_t viewingAreaPositionX = this->memoryController.readMemory8Bit(viewingAreaPositionXAddress);
-    uint8_t windowPositionY = this->memoryController.readMemory8Bit(windowPositionYAddress);
-    uint8_t windowPositionX = this->memoryController.readMemory8Bit(windowPositionXAddress) - 7;
+    uint8_t viewingAreaPositionY = this->memoryController->readMemory8Bit(viewingAreaPositionYAddress);
+    uint8_t viewingAreaPositionX = this->memoryController->readMemory8Bit(viewingAreaPositionXAddress);
+    uint8_t windowPositionY = this->memoryController->readMemory8Bit(windowPositionYAddress);
+    uint8_t windowPositionX = this->memoryController->readMemory8Bit(windowPositionXAddress) - 7;
 
-    uint8_t lcdController = this->memoryController.readMemory8Bit(LCDControllerAddress);
-    uint8_t currentScanline = this->memoryController.readMemory8Bit(CurrentScanlineRegisterAddress);
+    uint8_t lcdController = this->memoryController->readMemory8Bit(LCDControllerAddress);
+    uint8_t currentScanline = this->memoryController->readMemory8Bit(CurrentScanlineRegisterAddress);
 
     bool usingWindow = false;
 
@@ -90,10 +90,10 @@ void PPUController::renderTiles() {
 
         uint16_t tileLocation = tileData;
         if (useUnsigned) {
-            uint8_t tileNumber = this->memoryController.readMemory8Bit(tileAddress);
+            uint8_t tileNumber = this->memoryController->readMemory8Bit(tileAddress);
             tileLocation += tileNumber * 16;
         } else {
-            int8_t tileNumber = this->memoryController.readMemory8Bit(tileAddress);
+            int8_t tileNumber = this->memoryController->readMemory8Bit(tileAddress);
             tileLocation += (tileNumber + 128) * 16;
         }
 
@@ -101,9 +101,9 @@ void PPUController::renderTiles() {
         line *= 2;
 
         uint16_t address1 = tileLocation + line;
-        uint8_t data1 = this->memoryController.readMemory8Bit(address1);
+        uint8_t data1 = this->memoryController->readMemory8Bit(address1);
         uint16_t address2 = tileLocation + line + 1;
-        uint8_t data2 = this->memoryController.readMemory8Bit(address2);
+        uint8_t data2 = this->memoryController->readMemory8Bit(address2);
 
         uint8_t colorBit = positionX % 8;
         colorBit -= 7;
@@ -151,8 +151,8 @@ void PPUController::renderTiles() {
 }
 
 void PPUController::renderSprites() {
-    uint8_t lcdController = this->memoryController.readMemory8Bit(LCDControllerAddress);
-    uint8_t currentScanline = this->memoryController.readMemory8Bit(CurrentScanlineRegisterAddress);
+    uint8_t lcdController = this->memoryController->readMemory8Bit(LCDControllerAddress);
+    uint8_t currentScanline = this->memoryController->readMemory8Bit(CurrentScanlineRegisterAddress);
     bool use8x16 = false;
     if (testBit(lcdController, 2)) {
         use8x16 = true;
@@ -160,10 +160,10 @@ void PPUController::renderSprites() {
 
     for (uint8_t sprite = 0; sprite < 40; sprite++) {
         uint16_t spriteIndex = sprite * 4;
-        uint8_t positionY = this->memoryController.readMemory8Bit(0xFE00+spriteIndex) - 16;
-        uint8_t positionX = this->memoryController.readMemory8Bit(0xFE00+spriteIndex + 1) - 8;
-        uint8_t tileLocation = this->memoryController.readMemory8Bit(0xFE00 + spriteIndex + 2);
-        uint8_t attributes = this->memoryController.readMemory8Bit(0xFE00 + spriteIndex + 3);
+        uint8_t positionY = this->memoryController->readMemory8Bit(0xFE00+spriteIndex) - 16;
+        uint8_t positionX = this->memoryController->readMemory8Bit(0xFE00+spriteIndex + 1) - 8;
+        uint8_t tileLocation = this->memoryController->readMemory8Bit(0xFE00 + spriteIndex + 2);
+        uint8_t attributes = this->memoryController->readMemory8Bit(0xFE00 + spriteIndex + 3);
 
         bool flipY = testBit(attributes, 6);
         bool flipX = testBit(attributes, 5);
@@ -183,8 +183,8 @@ void PPUController::renderSprites() {
 
             line *= 2;
             int32_t dataAddress = (0x8000 + (tileLocation * 16)) + line;
-            uint8_t data1 = this->memoryController.readMemory8Bit(dataAddress);
-            uint8_t data2 = this->memoryController.readMemory8Bit(dataAddress + 1);
+            uint8_t data1 = this->memoryController->readMemory8Bit(dataAddress);
+            uint8_t data2 = this->memoryController->readMemory8Bit(dataAddress + 1);
 
             for (int8_t tilePixel = 7; tilePixel >= 0; tilePixel--) {
                 uint8_t colorBit = tilePixel;
@@ -257,17 +257,17 @@ void PPUController::renderSprites() {
 }
 
 void PPUController::updateLCDStatus() {
-    uint8_t status = this->memoryController.readMemory8Bit(LCDStatusRegisterAddress);
+    uint8_t status = this->memoryController->readMemory8Bit(LCDStatusRegisterAddress);
     if (!this->isLCDEnabled()) {
         this->scanlineRenderCyclesCounter = 456;
-        this->memoryController.writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, 0);
+        this->memoryController->writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, 0);
         status &= 252;
         status = setBit(status, 0);
-        this->memoryController.writeMemory(LCDStatusRegisterAddress, status);
+        this->memoryController->writeMemory(LCDStatusRegisterAddress, status);
         return;
     }
 
-    uint8_t currentScanline = this->memoryController.readMemory8Bit(CurrentScanlineRegisterAddress);
+    uint8_t currentScanline = this->memoryController->readMemory8Bit(CurrentScanlineRegisterAddress);
     uint8_t currentMode = status & 0x3;
 
     uint8_t mode = 0;
@@ -300,24 +300,24 @@ void PPUController::updateLCDStatus() {
     }
 
     if (requestInterrupt && mode != currentMode) {
-        this->interruptController.requestInterrupt(1);
+        this->interruptController->requestInterrupt(1);
     }
 
-    uint8_t coincidenceScanline = this->memoryController.readMemory8Bit(CoincidenceFlagAddress);
+    uint8_t coincidenceScanline = this->memoryController->readMemory8Bit(CoincidenceFlagAddress);
     if (currentScanline == coincidenceScanline) {
         status = setBit(status, 2);
         if (testBit(status, 6)) {
-            this->interruptController.requestInterrupt(1);
+            this->interruptController->requestInterrupt(1);
         }
     } else {
         status = clearBit(status, 2);
     }
 
-    this->memoryController.writeMemory(LCDStatusRegisterAddress, status);
+    this->memoryController->writeMemory(LCDStatusRegisterAddress, status);
 }
 
 bool PPUController::isLCDEnabled() {
-    bool value = this->memoryController.readMemory8Bit(LCDControllerAddress);
+    bool value = this->memoryController->readMemory8Bit(LCDControllerAddress);
     return testBit(value, 7);
 }
 
@@ -333,15 +333,15 @@ void PPUController::updateScreen(uint8_t cycles) {
         return;
     }
 
-    uint8_t currentScanline = this->memoryController.readMemory8Bit(CurrentScanlineRegisterAddress);
+    uint8_t currentScanline = this->memoryController->readMemory8Bit(CurrentScanlineRegisterAddress);
     currentScanline += 1;
-    this->memoryController.writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, currentScanline);
+    this->memoryController->writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, currentScanline);
     this->scanlineRenderCyclesCounter = 456;
 
     if (currentScanline == 144) {
-        this->interruptController.requestInterrupt(0);
+        this->interruptController->requestInterrupt(0);
     } else if (currentScanline >= 153) {
-        this->memoryController.writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, 0);
+        this->memoryController->writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, 0);
     } else if (currentScanline < 144) {
         this->drawScanline();
     }
@@ -350,7 +350,7 @@ void PPUController::updateScreen(uint8_t cycles) {
 uint8_t PPUController::getColor(uint8_t color, uint16_t address) {
     uint8_t high = 0;
     uint8_t low = 0;
-    uint8_t palette = this->memoryController.readMemory8Bit(address);
+    uint8_t palette = this->memoryController->readMemory8Bit(address);
 
     switch (color) {
     case 0: {

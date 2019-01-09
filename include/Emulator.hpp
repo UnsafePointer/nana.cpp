@@ -6,13 +6,13 @@
 
 class Emulator {
 private:
-    CPUController cpuController;
-    TimerController timerController;
-    InterruptController interruptController;
-    PPUController ppuController;
+    CPUController *cpuController;
+    TimerController *timerController;
+    InterruptController *interruptController;
+    PPUController *ppuController;
     uint8_t executeNextOpCode();
 public:
-    Emulator();
+    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController);
     ~Emulator();
     MemoryController memoryController;
     void emulateFrame();

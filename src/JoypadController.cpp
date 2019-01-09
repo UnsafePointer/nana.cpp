@@ -1,7 +1,7 @@
 #include "JoypadController.hpp"
 #include "Utils.hpp"
 
-JoypadController::JoypadController() {
+JoypadController::JoypadController(InterruptController &interruptController, MemoryController &memoryController) : interruptController(&interruptController), memoryController(&memoryController) {
 
 }
 
@@ -18,7 +18,7 @@ void JoypadController::handleKeyPress(uint8_t key) {
         isButton = true;
     }
 
-    uint8_t requested = this->memoryController.readMemoryAvoidingTraps(JoypadRegisterAddress);
+    uint8_t requested = this->memoryController->readMemoryAvoidingTraps(JoypadRegisterAddress);
     bool requestInterrupt = false;
 
     if (isButton && !testBit(requested, 5)) {
@@ -28,7 +28,7 @@ void JoypadController::handleKeyPress(uint8_t key) {
     }
 
     if (requestInterrupt && !isKeyPressed) {
-        this->interruptController.requestInterrupt(4);
+        this->interruptController->requestInterrupt(4);
     }
 }
 
@@ -37,7 +37,7 @@ void JoypadController::handleKeyRelease(uint8_t key) {
 }
 
 uint8_t JoypadController::getJoypadState() {
-    uint8_t value = this->memoryController.readMemoryAvoidingTraps(JoypadRegisterAddress);
+    uint8_t value = this->memoryController->readMemoryAvoidingTraps(JoypadRegisterAddress);
     value ^= 0xFF;
 
     if (!testBit(value, 4)) {
