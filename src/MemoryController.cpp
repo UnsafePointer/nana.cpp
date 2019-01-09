@@ -91,13 +91,16 @@ uint8_t MemoryController::readMemory8Bit(uint16_t address) {
         uint8_t value = this->cartridge[bankAddress + currentRamBank*RamBankSize];
         return value;
     } else if (address == JoypadRegisterAddress) {
-        // TODO: uint8_t value = this->joypadController.getJoypadState();
-        // return value;
-        return 0;
+        uint8_t value = this->joypadController->getJoypadState();
+        return value;
     }
 
     uint8_t value = this->rom[address];
     return value;
+}
+
+uint8_t MemoryController::readMemoryAvoidingTraps(uint16_t address) {
+    return this->rom[address];
 }
 
 uint16_t MemoryController::readMemory16Bit(uint16_t address) {
