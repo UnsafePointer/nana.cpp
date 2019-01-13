@@ -1165,7 +1165,7 @@ uint8_t CPUController::cpu8BitRegisterDecrement(Register8Bit &r) {
 	uint8_t previous = r.bits;
 	r.bits = r.bits - 1;
 	if (r.bits == 0x0) {
-		this->clearFlagZ();
+		this->setFlagZ();
 	} else {
 		this->clearFlagZ();
 	}
