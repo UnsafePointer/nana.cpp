@@ -10,7 +10,7 @@ const static uint16_t RamBankSize = 0x2000;
 const static uint16_t RomBankSize = 0x4000;
 const static uint16_t DMATransferAddress = 0xFF46;
 
-MemoryController::MemoryController() {
+MemoryController::MemoryController(Logger &logger) : logger(&logger) {
     this->cartridgeType = ROMOnly;
     this->currentRomBank = 1;
     this->currentRamBank = 0;
@@ -80,6 +80,10 @@ void MemoryController::loadCartridge(std::string filename) {
             this->cartridgeType = MBC2;
             break;
     }
+
+    std::ostringstream message;
+    message << "Cartridge type: " << (int)cartridgeTypeDefinition;
+    this->logger->logMessage(message.str());
 }
 
 void MemoryController::writeMemory(uint16_t address, uint8_t data) {

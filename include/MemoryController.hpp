@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include "Logger.hpp"
 
 class JoypadController;
 class TimerController;
@@ -21,6 +22,7 @@ private:
     bool romBankEnabled;
     uint8_t currentRamBank;
     uint8_t currentRomBank;
+    Logger *logger;
 
     void handleMemoryBanking(uint16_t address, uint8_t data);
     void enableRamBanking(uint16_t address, uint8_t data);
@@ -30,7 +32,7 @@ private:
     void selectMemoryBankingMode(uint8_t data);
     void dmaTransfer(uint8_t data);
 public:
-    MemoryController();
+    MemoryController(Logger &logger);
     ~MemoryController();
 
     JoypadController *joypadController;

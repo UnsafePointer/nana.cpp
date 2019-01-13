@@ -1,7 +1,7 @@
 #include "JoypadController.hpp"
 #include "Utils.hpp"
 
-JoypadController::JoypadController(InterruptController &interruptController, MemoryController &memoryController) : interruptController(&interruptController), memoryController(&memoryController) {
+JoypadController::JoypadController(InterruptController &interruptController, MemoryController &memoryController, Logger &logger) : interruptController(&interruptController), memoryController(&memoryController), logger(&logger) {
     this->joypadState = 0xFF;
 }
 

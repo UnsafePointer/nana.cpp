@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "MemoryController.hpp"
 #include "InterruptController.hpp"
+#include "Logger.hpp"
 
 const static uint16_t LCDControllerAddress = 0xFF40;
 const static uint16_t LCDStatusRegisterAddress = 0xFF41;
@@ -13,6 +14,7 @@ private:
     int16_t scanlineRenderCyclesCounter;
     MemoryController *memoryController;
     InterruptController *interruptController;
+    Logger *logger;
     void drawScanline();
     void renderTiles();
     void renderSprites();
@@ -21,7 +23,7 @@ private:
     uint8_t getColor(uint8_t color, uint16_t address);
 public:
     uint8_t screenData[160][144][3];
-    PPUController(MemoryController &memoryController, InterruptController &interruptController);
+    PPUController(MemoryController &memoryController, InterruptController &interruptController, Logger &logger);
     ~PPUController();
     void updateScreen(uint8_t cycles);
 };

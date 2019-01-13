@@ -8,6 +8,7 @@
 #include "CPUController.hpp"
 #include "PPUController.hpp"
 #include "JoypadController.hpp"
+#include "Logger.hpp"
 
 const static uint16_t width = 160;
 const static uint16_t height = 144;
@@ -18,16 +19,23 @@ int main(int argc, char const *argv[])
     if (argc <= 1) {
         exit(1);
     }
+    char *nanaDebug = std::getenv("NANA_DEBUG");
+    bool enableDebug = false;
+    if (nanaDebug != NULL) {
+        enableDebug = true;
+    }
     std::string gameArg = argv[1];
-    MemoryController memoryController = MemoryController();
-    CPUController cpuController = CPUController(memoryController);
-    InterruptController interruptController = InterruptController(memoryController, cpuController);
-    PPUController ppuController = PPUController(memoryController, interruptController);
-    TimerController timerController = TimerController(memoryController, interruptController);
+    Logger logger = Logger(enableDebug);
+    logger.setupLogFile();
+    MemoryController memoryController = MemoryController(logger);
+    CPUController cpuController = CPUController(memoryController, logger);
+    InterruptController interruptController = InterruptController(memoryController, cpuController, logger);
+    PPUController ppuController = PPUController(memoryController, interruptController, logger);
+    TimerController timerController = TimerController(memoryController, interruptController, logger);
     memoryController.timerController = &timerController;
-    JoypadController joypadController = JoypadController(interruptController, memoryController);
+    JoypadController joypadController = JoypadController(interruptController, memoryController, logger);
     memoryController.joypadController = &joypadController;
-    Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, memoryController);
+    Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, logger, memoryController);
     emulator.memoryController->loadCartridge(gameArg);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) > 0) {

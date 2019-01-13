@@ -1,7 +1,7 @@
 #include "CPUController.hpp"
 #include "Utils.hpp"
 
-CPUController::CPUController(MemoryController &memoryController) : memoryController(&memoryController) {
+CPUController::CPUController(MemoryController &memoryController, Logger &logger) : memoryController(&memoryController), logger(&logger) {
 	this->programCounter = Register16Bit();
 	this->programCounter.setValue(0x100);
 	this->af = Register16Bit();
@@ -2490,4 +2490,14 @@ uint8_t CPUController::executeExtendedOpCode(uint8_t opCode) {
 	}
 
 	return 0;
+}
+
+uint8_t CPUController::flags() {
+	return this->af.low.bits;
+}
+
+void CPUController::logRegisters() {
+	std::ostringstream message;
+	message << "AF: " << formatHexUInt16(this->af.value()) << ", BC: " << formatHexUInt16(this->bc.value()) << ", DE: " << formatHexUInt16(this->de.value()) << ", HL: " << formatHexUInt16(this->hl.value());
+	this->logger->logMessage(message.str());
 }

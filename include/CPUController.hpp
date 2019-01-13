@@ -1,10 +1,12 @@
 #pragma once
 #include "Register.hpp"
 #include "MemoryController.hpp"
+#include "Logger.hpp"
 
 class CPUController {
 private:
     MemoryController *memoryController;
+    Logger *logger;
     Register16Bit af;
     Register16Bit bc;
     Register16Bit de;
@@ -79,8 +81,10 @@ public:
     bool disableInterrupts;
     bool pendingDisableInterrupts;
     bool pendingEnableInterrupts;
-    CPUController(MemoryController &memoryController);
+    CPUController(MemoryController &memoryController, Logger &logger);
     ~CPUController();
     uint8_t executeOpCode(uint8_t opCode);
     void pushIntoStack(uint16_t value);
+    uint8_t flags();
+    void logRegisters();
 };

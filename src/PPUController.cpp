@@ -6,7 +6,7 @@ const static uint16_t viewingAreaPositionXAddress = 0xFF43;
 const static uint16_t windowPositionYAddress = 0xFF4A;
 const static uint16_t windowPositionXAddress = 0xFF4B;
 
-PPUController::PPUController(MemoryController &memoryController, InterruptController &interruptController) : memoryController(&memoryController), interruptController(&interruptController) {
+PPUController::PPUController(MemoryController &memoryController, InterruptController &interruptController, Logger &logger) : memoryController(&memoryController), interruptController(&interruptController), logger(&logger) {
     this->scanlineRenderCyclesCounter = 456;
 }
 

@@ -1,10 +1,11 @@
 #include "Emulator.hpp"
+#include "Utils.hpp"
 #include <iostream>
 
 const static uint64_t MaxCyclesPerSecond = 4194304;
 const static uint64_t MaxCyclesPerEmulationCycle = MaxCyclesPerSecond / 60;
 
-Emulator::Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, MemoryController &memoryController) : cpuController(&cpuController), timerController(&timerController), interruptController(&interruptController), ppuController(&ppuController), memoryController(&memoryController) {
+Emulator::Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, Logger &logger, MemoryController &memoryController) : cpuController(&cpuController), timerController(&timerController), interruptController(&interruptController), ppuController(&ppuController), logger(&logger), memoryController(&memoryController) {
 
 }
 
@@ -34,7 +35,10 @@ uint8_t Emulator::executeNextOpCode() {
     } else {
         this->cpuController->programCounter.increment();
         cycles = this->cpuController->executeOpCode(opCode);
-        std::cout << "Executing OP:" << std::hex << (int)opCode << std::endl;
+        std::ostringstream message;
+        message << "OP: " << formatHexUInt8(opCode) << ", Cycles: " << formatDecUInt8(cycles) << ", Program Counter: " << formatHexUInt16((int)this->cpuController->programCounter.value() - 1) << ", Flags: " << formatBinaryUint8(this->cpuController->flags());
+        this->logger->logMessage(message.str());
+        this->cpuController->logRegisters();
     }
 
     if (this->cpuController->pendingDisableInterrupts && opCode != 0xF3) {

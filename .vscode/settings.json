@@ -25,7 +25,16 @@
         "system_error": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "sstream": "cpp",
+        "array": "cpp",
+        "cstdarg": "cpp",
+        "ctime": "cpp",
+        "iomanip": "cpp",
+        "cinttypes": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp",
+        "bitset": "cpp"
     },
     "terminal.integrated.shell.windows": "cmd.exe"
 }

@@ -10,9 +10,10 @@ private:
     TimerController *timerController;
     InterruptController *interruptController;
     PPUController *ppuController;
+    Logger *logger;
     uint8_t executeNextOpCode();
 public:
-    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, MemoryController &memoryController);
+    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, Logger &logger, MemoryController &memoryController);
     ~Emulator();
     MemoryController *memoryController;
     void initialize();

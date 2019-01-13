@@ -1,7 +1,7 @@
 #include "InterruptController.hpp"
 #include "Utils.hpp"
 
-InterruptController::InterruptController(MemoryController &memoryController, CPUController &cpuController) : memoryController(&memoryController), cpuController(&cpuController) {
+InterruptController::InterruptController(MemoryController &memoryController, CPUController &cpuController, Logger &logger) : memoryController(&memoryController), cpuController(&cpuController), logger(&logger) {
 
 }
 
