@@ -16,5 +16,5 @@ void Register16Bit::increment() {
 }
 
 void Register16Bit::decrement() {
-    this->setValue(this->value() + 1);
+    this->setValue(this->value() - 1);
 }
