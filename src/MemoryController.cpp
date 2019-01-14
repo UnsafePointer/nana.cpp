@@ -10,7 +10,7 @@ const static uint16_t RamBankSize = 0x2000;
 const static uint16_t RomBankSize = 0x4000;
 const static uint16_t DMATransferAddress = 0xFF46;
 
-MemoryController::MemoryController(Logger &logger, bool enableMemoryAccessDebug) : logger(&logger), enableMemoryAccessDebug(enableMemoryAccessDebug) {
+MemoryController::MemoryController(Logger &logger, bool enableMemoryAccessDebug) : ram(), rom(), logger(&logger), enableMemoryAccessDebug(enableMemoryAccessDebug) {
     this->cartridgeType = ROMOnly;
     this->currentRomBank = 1;
     this->currentRamBank = 0;
