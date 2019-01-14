@@ -70,7 +70,7 @@ void TimerController::updateDividerRegister(uint8_t cycles) {
     this->dividerRegisterCyclesCounter += cycles;
     if (this->dividerRegisterCyclesCounter >= 256) {
         this->dividerRegisterCyclesCounter = 0;
-        uint8_t value = this->memoryController->readMemory8Bit(DividerRegisterAddress);
+        uint8_t value = this->memoryController->readMemoryAvoidingTraps(DividerRegisterAddress);
         this->memoryController->writeMemoryAvoidingTraps(DividerRegisterAddress, value+1);
     }
 }

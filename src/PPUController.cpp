@@ -333,7 +333,7 @@ void PPUController::updateScreen(uint8_t cycles) {
         return;
     }
 
-    uint8_t currentScanline = this->memoryController->readMemory8Bit(CurrentScanlineRegisterAddress);
+    uint8_t currentScanline = this->memoryController->readMemoryAvoidingTraps(CurrentScanlineRegisterAddress);
     currentScanline += 1;
     this->memoryController->writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, currentScanline);
     this->scanlineRenderCyclesCounter = 456;
