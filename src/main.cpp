@@ -24,6 +24,11 @@ int main(int argc, char const *argv[])
     if (nanaDebug != NULL) {
         enableDebug = true;
     }
+    char *nanaMaxCycles = std::getenv("NANA_MAX_CYCLES");
+    int maxCycles = 0;
+    if (nanaMaxCycles != NULL) {
+        maxCycles = strtol(nanaMaxCycles, nullptr, 10);
+    }
     std::string gameArg = argv[1];
     Logger logger = Logger(enableDebug);
     logger.setupLogFile();
@@ -35,7 +40,7 @@ int main(int argc, char const *argv[])
     memoryController.timerController = &timerController;
     JoypadController joypadController = JoypadController(interruptController, memoryController, logger);
     memoryController.joypadController = &joypadController;
-    Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, logger, memoryController);
+    Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, logger, maxCycles, memoryController);
     emulator.memoryController->loadCartridge(gameArg);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) > 0) {

@@ -12,8 +12,10 @@ private:
     PPUController *ppuController;
     Logger *logger;
     uint8_t executeNextOpCode();
+    int maxCycles;
+    int totalCycles;
 public:
-    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, Logger &logger, MemoryController &memoryController);
+    Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, Logger &logger, int maxCycles, MemoryController &memoryController);
     ~Emulator();
     MemoryController *memoryController;
     void initialize();

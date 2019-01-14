@@ -5,8 +5,8 @@
 const static uint64_t MaxCyclesPerSecond = 4194304;
 const static uint64_t MaxCyclesPerEmulationCycle = MaxCyclesPerSecond / 60;
 
-Emulator::Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, Logger &logger, MemoryController &memoryController) : cpuController(&cpuController), timerController(&timerController), interruptController(&interruptController), ppuController(&ppuController), logger(&logger), memoryController(&memoryController) {
-
+Emulator::Emulator(CPUController &cpuController, TimerController &timerController, InterruptController &interruptController, PPUController &ppuController, Logger &logger, int maxCycles, MemoryController &memoryController) : cpuController(&cpuController), timerController(&timerController), interruptController(&interruptController), ppuController(&ppuController), logger(&logger), maxCycles(maxCycles), memoryController(&memoryController) {
+    this->totalCycles = 0;
 }
 
 Emulator::~Emulator() {
@@ -24,6 +24,15 @@ void Emulator::emulateFrame() {
         this->timerController->updateTimers(cycles);
         this->ppuController->updateScreen(cycles);
         this->interruptController->executeInterrupts();
+        if (this->maxCycles != 0) {
+            this->totalCycles += cycles;
+            std::ostringstream message;
+            message << "Total number of cycles: " << this->totalCycles;
+            this->logger->logMessage(message.str());
+            if (this->totalCycles >= this->maxCycles) {
+                exit(0);
+            }
+        }
     }
 }
 

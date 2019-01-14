@@ -16,6 +16,10 @@
                 {
                     "name": "NANA_DEBUG",
                     "value": "TRUE"
+                },
+                {
+                    "name": "NANA_MAX_CYCLES",
+                    "value": "4194304"
                 }
             ],
             "externalConsole": false,
