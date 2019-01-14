@@ -317,7 +317,7 @@ void PPUController::updateLCDStatus() {
 }
 
 bool PPUController::isLCDEnabled() {
-    bool value = this->memoryController->readMemory8Bit(LCDControllerAddress);
+    uint8_t value = this->memoryController->readMemory8Bit(LCDControllerAddress);
     return testBit(value, 7);
 }
 
