@@ -15,7 +15,7 @@ CPUController::CPUController(MemoryController &memoryController, Logger &logger)
 	this->stackPointer = Register16Bit();
 	this->stackPointer.setValue(0xFFFE);
 	this->halted = false;
-	this->disableInterrupts = false;
+	this->disableInterrupts = true;
 	this->pendingDisableInterrupts = false;
 	this->pendingEnableInterrupts = false;
 }
