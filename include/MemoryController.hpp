@@ -23,6 +23,7 @@ private:
     uint8_t currentRamBank;
     uint8_t currentRomBank;
     Logger *logger;
+    bool enableMemoryAccessDebug;
 
     void handleMemoryBanking(uint16_t address, uint8_t data);
     void enableRamBanking(uint16_t address, uint8_t data);
@@ -32,7 +33,7 @@ private:
     void selectMemoryBankingMode(uint8_t data);
     void dmaTransfer(uint8_t data);
 public:
-    MemoryController(Logger &logger);
+    MemoryController(Logger &logger, bool enableMemoryAccessDebug);
     ~MemoryController();
 
     JoypadController *joypadController;

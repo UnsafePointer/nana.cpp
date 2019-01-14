@@ -29,10 +29,15 @@ int main(int argc, char const *argv[])
     if (nanaMaxCycles != NULL) {
         maxCycles = strtol(nanaMaxCycles, nullptr, 10);
     }
+    char *nanaMemoryAccessDebug = std::getenv("NANA_MEMORY_ACCESS_DEBUG");
+    bool enableMemoryAccessDebug = false;
+    if (nanaMemoryAccessDebug != NULL) {
+        enableMemoryAccessDebug = true;
+    }
     std::string gameArg = argv[1];
     Logger logger = Logger(enableDebug);
     logger.setupLogFile();
-    MemoryController memoryController = MemoryController(logger);
+    MemoryController memoryController = MemoryController(logger, enableMemoryAccessDebug);
     CPUController cpuController = CPUController(memoryController, logger);
     InterruptController interruptController = InterruptController(memoryController, cpuController, logger);
     PPUController ppuController = PPUController(memoryController, interruptController, logger);

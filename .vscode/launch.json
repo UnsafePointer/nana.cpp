@@ -20,6 +20,10 @@
                 {
                     "name": "NANA_MAX_CYCLES",
                     "value": "4194304"
+                },
+                {
+                    "name": "NANA_MEMORY_ACCESS_DEBUG",
+                    "value": "TRUE"
                 }
             ],
             "externalConsole": false,

@@ -10,7 +10,7 @@ const static uint16_t RamBankSize = 0x2000;
 const static uint16_t RomBankSize = 0x4000;
 const static uint16_t DMATransferAddress = 0xFF46;
 
-MemoryController::MemoryController(Logger &logger) : logger(&logger) {
+MemoryController::MemoryController(Logger &logger, bool enableMemoryAccessDebug) : logger(&logger), enableMemoryAccessDebug(enableMemoryAccessDebug) {
     this->cartridgeType = ROMOnly;
     this->currentRomBank = 1;
     this->currentRamBank = 0;
@@ -87,6 +87,11 @@ void MemoryController::loadCartridge(std::string filename) {
 }
 
 void MemoryController::writeMemory(uint16_t address, uint8_t data) {
+    if (this->enableMemoryAccessDebug) {
+        std::ostringstream message;
+        message << "Write: " << formatHexUInt16(address) << ", Value: " << formatHexUInt8(data);
+        this->logger->logMessage(message.str());
+    }
     if (address <= 0x7FFF) {
         this->handleMemoryBanking(address, data);
         return;
@@ -130,10 +135,20 @@ uint8_t MemoryController::readMemory8Bit(uint16_t address) {
         uint32_t bankAddress = address;
         bankAddress += (this->currentRomBank - 1) * RomBankSize;
         uint8_t value = this->cartridge[bankAddress];
+        if (this->enableMemoryAccessDebug) {
+            std::ostringstream message;
+            message << "Reading " << formatHexUInt16(address) << " (" << formatHexUInt16(bankAddress) << ")  from ROM at bank " << (int)this->currentRomBank << ": " << formatHexUInt8(value);
+            this->logger->logMessage(message.str());
+        }
         return value;
     } else if (address >= 0xA000 && address <= 0xBFFF) {
         uint32_t bankAddress = address - 0xA000;
         uint8_t value = this->cartridge[bankAddress + currentRamBank*RamBankSize];
+        if (this->enableMemoryAccessDebug) {
+            std::ostringstream message;
+            message << "Reading " << formatHexUInt16(address) << " from RAM at bank " << (int)this->currentRamBank << ": " << formatHexUInt8(value);
+            this->logger->logMessage(message.str());
+        }
         return value;
     } else if (address == JoypadRegisterAddress) {
         uint8_t value = this->joypadController->getJoypadState();
@@ -141,6 +156,11 @@ uint8_t MemoryController::readMemory8Bit(uint16_t address) {
     }
 
     uint8_t value = this->rom[address];
+    if (this->enableMemoryAccessDebug) {
+        std::ostringstream message;
+        message << "Reading " << formatHexUInt16(address) << " from ROM: " << formatHexUInt8(value);
+        this->logger->logMessage(message.str());
+    }
     return value;
 }
 
@@ -203,6 +223,11 @@ void MemoryController::changeLowRomBank(uint8_t data) {
             this->currentRomBank++;
         }
     }
+    if (this->enableMemoryAccessDebug) {
+        std::ostringstream message;
+        message << "Current ROM bank: " << (int)this->currentRomBank;
+        this->logger->logMessage(message.str());
+    }
 }
 
 void MemoryController::changeHighRomBank(uint8_t data) {
@@ -212,10 +237,20 @@ void MemoryController::changeHighRomBank(uint8_t data) {
     if (this->currentRomBank == 0) {
         this->currentRomBank++;
     }
+    if (this->enableMemoryAccessDebug) {
+        std::ostringstream message;
+        message << "Current ROM bank: " << (int)this->currentRomBank;
+        this->logger->logMessage(message.str());
+    }
 }
 
 void MemoryController::changeRamBank(uint8_t data) {
     this->currentRamBank = data & 0x3;
+    if (this->enableMemoryAccessDebug) {
+        std::ostringstream message;
+        message << "Current RAM bank: " << (int)this->currentRamBank;
+        this->logger->logMessage(message.str());
+    }
 }
 
 void MemoryController::selectMemoryBankingMode(uint8_t data) {
@@ -226,6 +261,12 @@ void MemoryController::selectMemoryBankingMode(uint8_t data) {
     }
     if (this->romBankEnabled) {
         this->currentRamBank = 0;
+    }
+    if (this->enableMemoryAccessDebug) {
+        std::string enabled =  this->romBankEnabled ? "enabled" : "disabled";
+        std::ostringstream message;
+        message << "ROM bank enabled: " << enabled;
+        this->logger->logMessage(message.str());
     }
 }
 
