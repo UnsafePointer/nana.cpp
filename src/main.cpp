@@ -64,6 +64,7 @@ int main(int argc, char const *argv[])
     uint32_t format;
     SDL_QueryTexture(texture, &format, nullptr, nullptr, nullptr);
     while (true) {
+        uint32_t initTicks = SDL_GetTicks();
         emulator.emulateFrame();
         uint32_t *pixels = nullptr;
         int pitch = 0;
@@ -86,6 +87,15 @@ int main(int argc, char const *argv[])
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
         SDL_RenderPresent(renderer);
+        uint32_t currentTicks = SDL_GetTicks();
+        uint32_t frameTime = 1000 / 60;
+        uint32_t currentFrameTime = currentTicks - initTicks;
+        if (currentFrameTime > frameTime) {
+            continue;
+        } else {
+            uint32_t delayTime = frameTime - currentFrameTime;
+            SDL_Delay(delayTime);
+        }
     }
 
     SDL_DestroyTexture(texture);
