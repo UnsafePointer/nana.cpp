@@ -109,9 +109,9 @@ void PPUController::renderTiles() {
         colorBit -= 7;
         colorBit *= 1;
 
-        uint8_t colorValue = getBit(data2, colorBit);
+        uint8_t colorValue = testBit(data2, colorBit);
         colorValue <<= 1;
-        colorValue |= getBit(data1, colorBit);
+        colorValue |= testBit(data1, colorBit);
 
         uint8_t color = this->getColor(colorValue, 0xFF47);
 
@@ -193,9 +193,9 @@ void PPUController::renderSprites() {
                     colorBit *= 1;
                 }
 
-                uint8_t colorValue = getBit(data2, colorBit);
+                uint8_t colorValue = testBit(data2, colorBit);
                 colorValue <<= 1;
-                colorValue |= getBit(data1, colorBit);
+                colorValue |= testBit(data1, colorBit);
 
                 uint16_t colorAddress = 0xFF48;
                 if (testBit(attributes, 4)) {
@@ -290,7 +290,7 @@ void PPUController::updateLCDStatus() {
         } else if (this->scanlineRenderCyclesCounter >= mode3Bounds) {
             mode = 3;
             status = setBit(status, 0);
-            status = clearBit(status, 1);
+            status = setBit(status, 1);
         } else {
             mode = 0;
             status = clearBit(status, 0);
@@ -375,9 +375,9 @@ uint8_t PPUController::getColor(uint8_t color, uint16_t address) {
     }
     }
 
-    uint8_t result = getBit(palette, high);
+    uint8_t result = testBit(palette, high);
     result <<= 1;
-    result |= getBit(palette, low);
+    result |= testBit(palette, low);
 
     return result;
 }

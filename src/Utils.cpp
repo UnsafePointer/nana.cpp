@@ -1,24 +1,18 @@
 #include "Utils.hpp"
 
 bool testBit(uint8_t n, unsigned int pos) {
-    uint8_t mask = 1 << pos;
-    return (n & mask) > 0;
+    bool bit = (n >> pos) & 1U;
+    return bit;
 }
 
 uint8_t setBit(uint8_t n, unsigned int pos) {
-    uint8_t mask = 1 << pos;
-    return n |= mask;
+    n |= 1UL << pos;
+    return n;
 }
 
 uint8_t clearBit(uint8_t n, unsigned int pos) {
-    uint8_t mask = (1 << pos);
-    mask ^= mask;
-    return n & mask;
-}
-
-bool getBit(uint8_t n, unsigned int pos) {
-    uint8_t mask = 1 << pos;
-    return (n & mask) == 0;
+    n &= ~(1UL << pos);
+    return n;
 }
 
 std::string formatDecUInt8(uint8_t data) {
