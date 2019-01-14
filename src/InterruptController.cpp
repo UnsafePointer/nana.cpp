@@ -14,12 +14,18 @@ void InterruptController::requestInterrupt(uint8_t interruptId) {
     uint8_t value = this->memoryController->readMemory8Bit(InterruptRequestRegisterAddress);
     value = setBit(value, interruptId);
     this->memoryController->writeMemory(InterruptRequestRegisterAddress, value);
+    std::ostringstream message;
+    message << "Interrupt requested: " << (int)interruptId;
+    this->logger->logMessage(message.str());
 }
 
 void InterruptController::clearRequestInterrupt(uint8_t interruptId) {
     uint8_t value = this->memoryController->readMemory8Bit(InterruptRequestRegisterAddress);
     value = clearBit(value, interruptId);
     this->memoryController->writeMemory(InterruptRequestRegisterAddress, value);
+    std::ostringstream message;
+    message << "Interrupt cleared: " << (int)interruptId;
+    this->logger->logMessage(message.str());
 }
 
 void InterruptController::executeInterrupts() {
