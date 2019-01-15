@@ -34,7 +34,10 @@
         "cinttypes": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "optional": "cpp"
     },
     "terminal.integrated.shell.windows": "cmd.exe"
 }

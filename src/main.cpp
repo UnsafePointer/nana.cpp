@@ -63,38 +63,45 @@ int main(int argc, char const *argv[])
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     uint32_t format;
     SDL_QueryTexture(texture, &format, nullptr, nullptr, nullptr);
-    while (true) {
-        uint32_t initTicks = SDL_GetTicks();
-        emulator.emulateFrame();
-        uint32_t *pixels = nullptr;
-        int pitch = 0;
-        if (SDL_LockTexture(texture, nullptr, (void**)&pixels, &pitch) > 0) {
-            exit(1);
-        }
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                uint32_t pixelPosition = y * (pitch / sizeof(unsigned int)) + x;
-                uint8_t r = ppuController.screenData[x][y][0];
-                uint8_t g = ppuController.screenData[x][y][1];
-                uint8_t b = ppuController.screenData[x][y][2];
-                uint8_t rgb[4] = {r, g, b, 0xFF};
-                uint32_t color = 0;
-                memcpy(&color, rgb, sizeof(rgb));
-                pixels[pixelPosition] = color;
+    bool quit = false;
+    float fps = 59.73;
+    float interval = 1000;
+    interval /= fps;
+    uint32_t initTicks = SDL_GetTicks();
+    while (!quit) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            joypadController.handleKeyboardEvent(&event.key);
+            if (event.type == SDL_QUIT) {
+                quit = true;
             }
         }
-        SDL_UnlockTexture(texture);
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-        SDL_RenderPresent(renderer);
+
         uint32_t currentTicks = SDL_GetTicks();
-        uint32_t frameTime = 1000 / 60;
-        uint32_t currentFrameTime = currentTicks - initTicks;
-        if (currentFrameTime > frameTime) {
-            continue;
-        } else {
-            uint32_t delayTime = frameTime - currentFrameTime;
-            SDL_Delay(delayTime);
+        if (initTicks + interval < currentTicks) {
+            emulator.emulateFrame();
+            uint32_t *pixels = nullptr;
+            int pitch = 0;
+            if (SDL_LockTexture(texture, nullptr, (void**)&pixels, &pitch) > 0) {
+                exit(1);
+            }
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    uint32_t pixelPosition = y * (pitch / sizeof(unsigned int)) + x;
+                    uint8_t r = ppuController.screenData[x][y][0];
+                    uint8_t g = ppuController.screenData[x][y][1];
+                    uint8_t b = ppuController.screenData[x][y][2];
+                    uint8_t rgb[4] = {r, g, b, 0xFF};
+                    uint32_t color = 0;
+                    memcpy(&color, rgb, sizeof(rgb));
+                    pixels[pixelPosition] = color;
+                }
+            }
+            SDL_UnlockTexture(texture);
+            SDL_RenderClear(renderer);
+            SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+            SDL_RenderPresent(renderer);
+            initTicks = SDL_GetTicks();
         }
     }
 

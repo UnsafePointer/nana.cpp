@@ -10,7 +10,7 @@ JoypadController::~JoypadController() {
 }
 
 void JoypadController::handleKeyPress(uint8_t key) {
-    bool isKeyPressed = testBit(this->joypadState, key);
+    bool isKeyPressed = !testBit(this->joypadState, key);
     this->joypadState = clearBit(this->joypadState, key);
 
     bool isButton = false;
@@ -51,4 +51,78 @@ uint8_t JoypadController::getJoypadState() {
     }
 
     return value;
+}
+
+void JoypadController::handleKeyboardEvent(SDL_KeyboardEvent *event) {
+    if (event->type == SDL_KEYDOWN) {
+        switch (event->keysym.sym) {
+            case 'a': {
+                this->handleKeyPress(4);
+                break;
+            }
+            case 's': {
+                this->handleKeyPress(5);
+                break;
+            }
+            case SDLK_UP: {
+                this->handleKeyPress(2);
+                break;
+            }
+            case SDLK_DOWN: {
+                this->handleKeyPress(3);
+                break;
+            }
+            case SDLK_LEFT: {
+                this->handleKeyPress(1);
+                break;
+            }
+            case SDLK_RIGHT: {
+                this->handleKeyPress(0);
+                break;
+            }
+            case SDLK_RETURN: {
+                this->handleKeyPress(7);
+                break;
+            }
+            case SDLK_SPACE: {
+                this->handleKeyPress(6);
+                break;
+            }
+        }
+    } else if (event->type == SDL_KEYUP) {
+        switch (event->keysym.sym) {
+            case 'a': {
+                this->handleKeyRelease(4);
+                break;
+            }
+            case 's': {
+                this->handleKeyPress(5);
+                break;
+            }
+            case SDLK_UP: {
+                this->handleKeyPress(2);
+                break;
+            }
+            case SDLK_DOWN: {
+                this->handleKeyPress(3);
+                break;
+            }
+            case SDLK_LEFT: {
+                this->handleKeyPress(1);
+                break;
+            }
+            case SDLK_RIGHT: {
+                this->handleKeyPress(0);
+                break;
+            }
+            case SDLK_RETURN: {
+                this->handleKeyPress(7);
+                break;
+            }
+            case SDLK_SPACE: {
+                this->handleKeyPress(6);
+                break;
+            }
+        }
+    }
 }

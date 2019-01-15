@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <SDL2/SDL.h>
 #include "InterruptController.hpp"
 #include "MemoryController.hpp"
 #include "Logger.hpp"
@@ -12,10 +13,11 @@ private:
     MemoryController *memoryController;
     Logger *logger;
     uint8_t joypadState;
+    void handleKeyPress(uint8_t key);
+    void handleKeyRelease(uint8_t key);
 public:
     JoypadController(InterruptController &interruptController, MemoryController &memoryController, Logger &logger);
     ~JoypadController();
-    void handleKeyPress(uint8_t key);
-    void handleKeyRelease(uint8_t key);
     uint8_t getJoypadState();
+    void handleKeyboardEvent(SDL_KeyboardEvent *event);
 };
