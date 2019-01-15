@@ -41,10 +41,10 @@ uint8_t CPUController::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterMemoryLoad(this->de.low);
 	}
 	case 0x26: {
-		return this->cpu8BitRegisterMemoryLoad(this->de.high);
+		return this->cpu8BitRegisterMemoryLoad(this->hl.high);
 	}
 	case 0x2E: {
-		return this->cpu8BitRegisterMemoryLoad(this->de.low);
+		return this->cpu8BitRegisterMemoryLoad(this->hl.low);
 	}
 	// LD r1,r2
 	case 0x7F: {
@@ -156,46 +156,46 @@ uint8_t CPUController::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterMemoryAddressLoad(this->de.low, this->hl.value());
 	}
 	case 0x60: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->bc.high);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->bc.high);
 	}
 	case 0x61: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->bc.low);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->bc.low);
 	}
 	case 0x62: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->de.high);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->de.high);
 	}
 	case 0x63: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->de.low);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->de.low);
 	}
 	case 0x64: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->hl.high);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->hl.high);
 	}
 	case 0x65: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->hl.low);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->hl.low);
 	}
 	case 0x66: {
-		return this->cpu8BitRegisterMemoryAddressLoad(this->de.high, this->hl.value());
+		return this->cpu8BitRegisterMemoryAddressLoad(this->hl.high, this->hl.value());
 	}
 	case 0x68: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->bc.high);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->bc.high);
 	}
 	case 0x69: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->bc.low);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->bc.low);
 	}
 	case 0x6A: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->de.high);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->de.high);
 	}
 	case 0x6B: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->de.low);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->de.low);
 	}
 	case 0x6C: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->hl.high);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->hl.high);
 	}
 	case 0x6D: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->hl.low);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->hl.low);
 	}
 	case 0x6E: {
-		return this->cpu8BitRegisterMemoryAddressLoad(this->de.low, this->hl.value());
+		return this->cpu8BitRegisterMemoryAddressLoad(this->hl.low, this->hl.value());
 	}
 	case 0x70: {
 		return this->cpu8BitRegisterMemoryWrite(this->hl.value(), this->bc.high);
@@ -256,10 +256,10 @@ uint8_t CPUController::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterLoad(this->de.low, this->af.high);
 	}
 	case 0x67: {
-		return this->cpu8BitRegisterLoad(this->de.high, this->af.high);
+		return this->cpu8BitRegisterLoad(this->hl.high, this->af.high);
 	}
 	case 0x6F: {
-		return this->cpu8BitRegisterLoad(this->de.low, this->af.high);
+		return this->cpu8BitRegisterLoad(this->hl.low, this->af.high);
 	}
 	case 0x02: {
 		return this->cpu8BitRegisterMemoryWrite(this->bc.value(), this->af.high);
@@ -1411,6 +1411,7 @@ uint8_t CPUController::cpu8BitRegisterRRMemoryAddress(uint16_t address) {
 uint8_t CPUController::cpu8BitRegisterSLA(Register8Bit &r) {
 	bool test = testBit(r.bits, 7);
 	r.bits = r.bits << 1;
+	this->clearAllFlags();
 	if (test) {
 		this->setFlagC();
 	}
