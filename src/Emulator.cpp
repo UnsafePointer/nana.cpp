@@ -16,6 +16,15 @@ Emulator::~Emulator() {
 void Emulator::initialize() {
 }
 
+void Emulator::countInstruction(uint8_t opCode) {
+    int count = 0;
+    if (this->instructionCounter.find(opCode) != this->instructionCounter.end()) {
+        count = this->instructionCounter[opCode];
+    }
+    count++;
+    this->instructionCounter[opCode] = count;
+}
+
 void Emulator::emulateFrame() {
     uint64_t cyclesThisUpdate = 0;
     while (cyclesThisUpdate < MaxCyclesPerEmulationCycle) {
@@ -38,6 +47,7 @@ void Emulator::emulateFrame() {
 
 uint8_t Emulator::executeNextOpCode() {
     uint8_t opCode = this->memoryController->readMemory8Bit(this->cpuController->programCounter.value());
+    this->countInstruction(opCode);
     uint8_t cycles = 0;
     if (this->cpuController->halted) {
         cycles = 4;
