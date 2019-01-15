@@ -27,7 +27,7 @@ void PPUController::drawScanline() {
 void PPUController::renderTiles() {
     uint16_t tileData = 0;
     uint16_t backgroundMemory = 0;
-    bool useUnsigned = false;
+    bool useUnsigned = true;
 
     uint8_t viewingAreaPositionY = this->memoryController->readMemory8Bit(viewingAreaPositionYAddress);
     uint8_t viewingAreaPositionX = this->memoryController->readMemory8Bit(viewingAreaPositionXAddress);
@@ -105,9 +105,9 @@ void PPUController::renderTiles() {
         uint16_t address2 = tileLocation + line + 1;
         uint8_t data2 = this->memoryController->readMemory8Bit(address2);
 
-        uint8_t colorBit = positionX % 8;
+        int8_t colorBit = positionX % 8;
         colorBit -= 7;
-        colorBit *= 1;
+        colorBit *= -1;
 
         uint8_t colorValue = testBit(data2, colorBit);
         colorValue <<= 1;
