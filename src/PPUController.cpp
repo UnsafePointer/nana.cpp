@@ -341,7 +341,7 @@ void PPUController::updateScreen(uint8_t cycles) {
 
     if (currentScanline == 144) {
         this->interruptController->requestInterrupt(0);
-    } else if (currentScanline >= 153) {
+    } else if (currentScanline > 153) {
         this->memoryController->writeMemoryAvoidingTraps(CurrentScanlineRegisterAddress, 0);
     } else if (currentScanline < 144) {
         this->drawScanline();
