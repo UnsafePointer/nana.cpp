@@ -717,10 +717,10 @@ uint8_t CPUController::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterIncrement(this->de.low);
 	}
 	case 0x24: {
-		return this->cpu8BitRegisterIncrement(this->de.high);
+		return this->cpu8BitRegisterIncrement(this->hl.high);
 	}
 	case 0x2C: {
-		return this->cpu8BitRegisterIncrement(this->de.low);
+		return this->cpu8BitRegisterIncrement(this->hl.low);
 	}
 	case 0x34: {
 		return this->cpu8BitIncrementMemoryAddress(this->hl.value());
@@ -742,10 +742,10 @@ uint8_t CPUController::executeOpCode(uint8_t opCode) {
 		return this->cpu8BitRegisterDecrement(this->de.low);
 	}
 	case 0x25: {
-		return this->cpu8BitRegisterDecrement(this->de.high);
+		return this->cpu8BitRegisterDecrement(this->hl.high);
 	}
 	case 0x2D: {
-		return this->cpu8BitRegisterDecrement(this->de.low);
+		return this->cpu8BitRegisterDecrement(this->hl.low);
 	}
 	case 0x35: {
 		return this->cpu8BitDecrementMemoryAddress(this->hl.value());
