@@ -1505,7 +1505,7 @@ uint8_t CPUController::cpu8BitRegisterBit(Register8Bit &r, uint8_t position) {
 	if (test) {
 		this->clearFlagZ();
 	} else {
-		this->clearFlagZ();
+		this->setFlagZ();
 	}
 	this->clearFlagN();
 	this->setFlagH();
