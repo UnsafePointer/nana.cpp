@@ -96,31 +96,31 @@ void JoypadController::handleKeyboardEvent(SDL_KeyboardEvent *event) {
                 break;
             }
             case 's': {
-                this->handleKeyPress(5);
+                this->handleKeyRelease(5);
                 break;
             }
             case SDLK_UP: {
-                this->handleKeyPress(2);
+                this->handleKeyRelease(2);
                 break;
             }
             case SDLK_DOWN: {
-                this->handleKeyPress(3);
+                this->handleKeyRelease(3);
                 break;
             }
             case SDLK_LEFT: {
-                this->handleKeyPress(1);
+                this->handleKeyRelease(1);
                 break;
             }
             case SDLK_RIGHT: {
-                this->handleKeyPress(0);
+                this->handleKeyRelease(0);
                 break;
             }
             case SDLK_RETURN: {
-                this->handleKeyPress(7);
+                this->handleKeyRelease(7);
                 break;
             }
             case SDLK_SPACE: {
-                this->handleKeyPress(6);
+                this->handleKeyRelease(6);
                 break;
             }
         }
