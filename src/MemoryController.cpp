@@ -143,7 +143,7 @@ uint8_t MemoryController::readMemory8Bit(uint16_t address) {
         return value;
     } else if (address >= 0xA000 && address <= 0xBFFF) {
         uint32_t bankAddress = address - 0xA000;
-        uint8_t value = this->cartridge[bankAddress + currentRamBank*RamBankSize];
+        uint8_t value = this->ram[bankAddress + currentRamBank*RamBankSize];
         if (this->enableMemoryAccessDebug) {
             std::ostringstream message;
             message << "Reading " << formatHexUInt16(address) << " from RAM at bank " << (int)this->currentRamBank << ": " << formatHexUInt8(value);
