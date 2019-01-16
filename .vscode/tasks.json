@@ -8,7 +8,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "command": "make",
+            "command": "make -f amd64.mk",
         },
         {
             "label": "Build & run C++ project",

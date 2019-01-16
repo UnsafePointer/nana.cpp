@@ -1,23 +1,2 @@
-CXX		  := g++
-CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb
-
-BIN		:= bin
-SRC		:= src
-INCLUDE	:= include
-LIB		:= lib
-
-LIBRARIES	:= -lSDL2
-EXECUTABLE	:= main
-
-
-all: $(BIN)/$(EXECUTABLE)
-
-run: clean all
-	clear
-	./$(BIN)/$(EXECUTABLE)
-
-$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
-
-clean:
-	-rm $(BIN)/*
+all:
+	@echo "Execute one of the following commands:\n\tmake -f amd64.mk\t\t# build for Linux\n\tmake -f aarch64.mk\t\t# build for Horizon (use libtransistor)"
