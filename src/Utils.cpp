@@ -33,6 +33,12 @@ std::string formatHexUInt16(uint16_t data) {
     return buffer;
 }
 
+std::string formatHexUInt32(uint32_t data) {
+    char buffer[100];
+    sprintf(buffer, "%#04x", data);
+    return buffer;
+}
+
 std::string formatBinaryUint8(uint8_t data) {
     std::bitset<sizeof(char) * 8> bs(data);
     return bs.to_string().substr(0, 4);

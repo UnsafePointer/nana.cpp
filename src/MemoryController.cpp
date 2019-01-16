@@ -137,7 +137,7 @@ uint8_t MemoryController::readMemory8Bit(uint16_t address) {
         uint8_t value = this->cartridge[bankAddress];
         if (this->enableMemoryAccessDebug) {
             std::ostringstream message;
-            message << "Reading " << formatHexUInt16(address) << " (" << formatHexUInt16(bankAddress) << ") from ROM at bank " << (int)this->currentRomBank << ": " << formatHexUInt8(value);
+            message << "Reading " << formatHexUInt16(address) << " (" << formatHexUInt32(bankAddress) << ") from ROM at bank " << (int)this->currentRomBank << ": " << formatHexUInt8(value);
             this->logger->logMessage(message.str());
         }
         return value;

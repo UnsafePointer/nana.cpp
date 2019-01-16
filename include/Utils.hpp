@@ -15,4 +15,6 @@ std::string formatHexUInt8(uint8_t data);
 
 std::string formatHexUInt16(uint16_t data);
 
+std::string formatHexUInt32(uint32_t data);
+
 std::string formatBinaryUint8(uint8_t data);
