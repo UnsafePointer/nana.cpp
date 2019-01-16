@@ -81,9 +81,11 @@ void MemoryController::loadCartridge(std::string filename) {
             break;
     }
 
-    std::ostringstream message;
-    message << "Cartridge type: " << (int)cartridgeTypeDefinition;
-    this->logger->logMessage(message.str());
+    if (this->logger->enableDebug) {
+        std::ostringstream message;
+        message << "Cartridge type: " << (int)cartridgeTypeDefinition;
+        this->logger->logMessage(message.str());
+    }
 }
 
 void MemoryController::writeMemory(uint16_t address, uint8_t data) {

@@ -54,10 +54,12 @@ uint8_t Emulator::executeNextOpCode() {
     } else {
         this->cpuController->programCounter.increment();
         cycles = this->cpuController->executeOpCode(opCode);
-        std::ostringstream message;
-        message << "OP: " << formatHexUInt8(opCode) << ", Cycles: " << formatDecUInt8(cycles) << ", Program Counter: " << formatHexUInt16((int)this->cpuController->programCounter.value() - 1) << ", Flags: " << formatBinaryUint8(this->cpuController->flags());
-        this->logger->logMessage(message.str());
-        this->cpuController->logRegisters();
+        if (this->logger->enableDebug) {
+            std::ostringstream message;
+            message << "OP: " << formatHexUInt8(opCode) << ", Cycles: " << formatDecUInt8(cycles) << ", Program Counter: " << formatHexUInt16((int)this->cpuController->programCounter.value() - 1) << ", Flags: " << formatBinaryUint8(this->cpuController->flags());
+            this->logger->logMessage(message.str());
+            this->cpuController->logRegisters();
+        }
     }
 
     if (this->cpuController->pendingDisableInterrupts && opCode != 0xF3) {
