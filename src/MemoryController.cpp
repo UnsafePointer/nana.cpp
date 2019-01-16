@@ -216,9 +216,9 @@ void MemoryController::changeLowRomBank(uint8_t data) {
             this->currentRomBank++;
         }
     } else {
-        uint8_t test = data & 0x31;
-        this->currentRomBank &= 244;
-        this->currentRamBank |= test;
+        uint8_t test = data & 31;
+        this->currentRomBank &= 224;
+        this->currentRomBank |= test;
         if (this->currentRomBank == 0) {
             this->currentRomBank++;
         }
