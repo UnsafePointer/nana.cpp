@@ -18,6 +18,7 @@ void Logger::setupLogFile() {
 }
 
 void Logger::logMessage(std::string message) {
+#ifndef __SWITCH__
     if (!enableDebug) {
         return;
     }
@@ -32,4 +33,5 @@ void Logger::logMessage(std::string message) {
     logfile.close();
     this->stream.str(std::string());
     this->bufferSize = 0;
+#endif
 }

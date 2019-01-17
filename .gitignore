@@ -66,3 +66,9 @@
 bin/*
 *.gb
 *.log
+*.nacp
+*.nro
+*.nso
+*.pfs0
+*.elf
+build/
