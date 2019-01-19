@@ -1,5 +1,8 @@
 #include "JoypadController.hpp"
 #include "Utils.hpp"
+#ifdef __SWITCH__
+#include <switch.h>
+#endif
 
 JoypadController::JoypadController(InterruptController &interruptController, MemoryController &memoryController, Logger &logger) : interruptController(&interruptController), memoryController(&memoryController), logger(&logger) {
     this->joypadState = 0xFF;
@@ -53,6 +56,51 @@ uint8_t JoypadController::getJoypadState() {
     return value;
 }
 
+#ifdef __SWITCH__
+void JoypadController::handleJoystickEvent(SDL_Event *event) {
+    if (event->type == SDL_JOYBUTTONDOWN) {
+        if (event->jbutton.which == 0) {
+            if (event->jbutton.button == 0) {
+                this->handleKeyPress(4);
+            } else if (event->jbutton.button == 1) {
+                this->handleKeyPress(5);
+            } else if (event->jbutton.button == 13) {
+                this->handleKeyPress(2);
+            } else if (event->jbutton.button == 15) {
+                this->handleKeyPress(3);
+            } else if (event->jbutton.button == 12) {
+                this->handleKeyPress(1);
+            } else if (event->jbutton.button == 14) {
+                this->handleKeyPress(0);
+            } else if (event->jbutton.button == 10) {
+                this->handleKeyPress(7);
+            } else if (event->jbutton.button == 11) {
+                this->handleKeyPress(6);
+            }
+        }
+    } else if (event->type == SDL_JOYBUTTONUP) {
+        if (event->jbutton.which == 0) {
+            if (event->jbutton.button == 0) {
+                this->handleKeyRelease(4);
+            } else if (event->jbutton.button == 1) {
+                this->handleKeyRelease(5);
+            } else if (event->jbutton.button == 13) {
+                this->handleKeyRelease(2);
+            } else if (event->jbutton.button == 15) {
+                this->handleKeyRelease(3);
+            } else if (event->jbutton.button == 12) {
+                this->handleKeyRelease(1);
+            } else if (event->jbutton.button == 14) {
+                this->handleKeyRelease(0);
+            } else if (event->jbutton.button == 10) {
+                this->handleKeyRelease(7);
+            } else if (event->jbutton.button == 11) {
+                this->handleKeyRelease(6);
+            }
+        }
+    }
+}
+#else
 void JoypadController::handleKeyboardEvent(SDL_KeyboardEvent *event) {
     if (event->type == SDL_KEYDOWN) {
         switch (event->keysym.sym) {
@@ -126,3 +174,4 @@ void JoypadController::handleKeyboardEvent(SDL_KeyboardEvent *event) {
         }
     }
 }
+#endif

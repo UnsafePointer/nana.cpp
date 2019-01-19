@@ -19,5 +19,9 @@ public:
     JoypadController(InterruptController &interruptController, MemoryController &memoryController, Logger &logger);
     ~JoypadController();
     uint8_t getJoypadState();
+#ifdef __SWITCH__
+    void handleJoystickEvent(SDL_Event *event);
+#else
     void handleKeyboardEvent(SDL_KeyboardEvent *event);
+#endif
 };

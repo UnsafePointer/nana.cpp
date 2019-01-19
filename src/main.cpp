@@ -14,11 +14,13 @@
 #include <switch.h>
 #endif
 
-const static uint16_t width = 1280 / 5; // = 256
-const static uint16_t height = 720 / 5; // = 144
+const static uint16_t width = 1920 / 6; // = 320
+const static uint16_t height = 1080 / 6; // = 180
 const static uint16_t contentWidth = 160;
 const static uint16_t contentHeight = 144;
-const static uint16_t contentScale = 5;
+const static uint16_t contentSpaceX = (width - contentWidth) / 2;
+const static uint16_t contentSpaceY = (height - contentHeight) / 2;
+const static uint16_t contentScale = 6;
 
 using namespace std;
 
@@ -68,7 +70,7 @@ int main(int argc, char const *argv[])
     Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, logger, maxCycles, memoryController);
     emulator.memoryController->loadCartridge(gameArg);
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
         cout << "SDL init failed with error: " << SDL_GetError() << endl;
         exit(1337);
     }
@@ -83,9 +85,19 @@ int main(int argc, char const *argv[])
         exit(1337);
     }
     SDL_RenderSetScale(renderer, contentScale, contentScale);
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     uint32_t format;
     SDL_QueryTexture(texture, &format, nullptr, nullptr, nullptr);
+
+#ifdef __SWITCH__
+    for (int i = 0; i < 2; i++) {
+        if (SDL_JoystickOpen(i) == NULL) {
+            cout << "SDL joystick open failed with error: " << SDL_GetError() << endl;
+            exit(1337);
+        }
+    }
+#endif
+
     bool quit = false;
     float fps = 59.73;
     float interval = 1000;
@@ -94,7 +106,11 @@ int main(int argc, char const *argv[])
     while (!quit) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+#ifdef __SWITCH__
+            joypadController.handleJoystickEvent(&event);
+#else
             joypadController.handleKeyboardEvent(&event.key);
+#endif
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
@@ -108,14 +124,15 @@ int main(int argc, char const *argv[])
             if (SDL_LockTexture(texture, nullptr, (void**)&pixels, &pitch) > 0) {
                 exit(1);
             }
-            for (int x = 48; x < width - 48; x++) {
-                for (int y = 0; y < height; y++) {
+            for (int x = contentSpaceX; x < width - contentSpaceX; x++) {
+                for (int y = contentSpaceY; y < height - contentSpaceY; y++) {
                     uint32_t pixelPosition = y * (pitch / sizeof(unsigned int)) + x;
-                    uint8_t screenDataPositionX = x - 48;
-                    uint8_t r = ppuController.screenData[screenDataPositionX][y][0];
-                    uint8_t g = ppuController.screenData[screenDataPositionX][y][1];
-                    uint8_t b = ppuController.screenData[screenDataPositionX][y][2];
-                    uint8_t rgb[4] = {r, g, b, 0xFF};
+                    uint8_t screenDataPositionX = x - contentSpaceX;
+                    uint8_t screenDataPositionY = y - contentSpaceY;
+                    uint8_t r = ppuController.screenData[screenDataPositionX][screenDataPositionY][0];
+                    uint8_t g = ppuController.screenData[screenDataPositionX][screenDataPositionY][1];
+                    uint8_t b = ppuController.screenData[screenDataPositionX][screenDataPositionY][2];
+                    uint8_t rgb[4] = {0xFF, b, g, r};
                     uint32_t color = 0;
                     memcpy(&color, rgb, sizeof(rgb));
                     pixels[pixelPosition] = color;
