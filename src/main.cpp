@@ -10,31 +10,51 @@
 #include "JoypadController.hpp"
 #include "Logger.hpp"
 
-const static uint16_t width = 160;
-const static uint16_t height = 144;
-const static uint16_t scale = 5;
+#ifdef __SWITCH__
+#include <switch.h>
+#endif
+
+const static uint16_t width = 1280 / 5; // = 256
+const static uint16_t height = 720 / 5; // = 144
+const static uint16_t contentWidth = 160;
+const static uint16_t contentHeight = 144;
+const static uint16_t contentScale = 5;
+
+using namespace std;
 
 int main(int argc, char const *argv[])
 {
+    bool enableDebug = false;
+    int maxCycles = 0;
+    bool enableMemoryAccessDebug = false;
+    string gameArg = "romfs:/roms/tetris.gb";
+
+#ifdef __SWITCH__
+    Result result = romfsInit();
+    if (R_FAILED(result)) {
+        cout << "romfs init failed" << endl;
+    }
+#else
     if (argc <= 1) {
         exit(1);
     }
-    char *nanaDebug = std::getenv("NANA_DEBUG");
-    bool enableDebug = false;
+    char *nanaDebug = getenv("NANA_DEBUG");
     if (nanaDebug != NULL) {
         enableDebug = true;
     }
-    char *nanaMaxCycles = std::getenv("NANA_MAX_CYCLES");
-    int maxCycles = 0;
+
+    char *nanaMaxCycles = getenv("NANA_MAX_CYCLES");
     if (nanaMaxCycles != NULL) {
         maxCycles = strtol(nanaMaxCycles, nullptr, 10);
     }
-    char *nanaMemoryAccessDebug = std::getenv("NANA_MEMORY_ACCESS_DEBUG");
-    bool enableMemoryAccessDebug = false;
+
+    char *nanaMemoryAccessDebug = getenv("NANA_MEMORY_ACCESS_DEBUG");
     if (nanaMemoryAccessDebug != NULL) {
         enableMemoryAccessDebug = true;
     }
-    std::string gameArg = argv[1];
+    gameArg = argv[1];
+#endif
+
     Logger logger = Logger(enableDebug);
     logger.setupLogFile();
     MemoryController memoryController = MemoryController(logger, enableMemoryAccessDebug);
@@ -48,18 +68,21 @@ int main(int argc, char const *argv[])
     Emulator emulator = Emulator(cpuController, timerController, interruptController, ppuController, logger, maxCycles, memoryController);
     emulator.memoryController->loadCartridge(gameArg);
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) > 0) {
-        exit(1);
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        cout << "SDL init failed with error: " << SDL_GetError() << endl;
+        exit(1337);
     }
-    SDL_Window *window = SDL_CreateWindow("ナナ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width * scale, height * scale, SDL_WINDOW_OPENGL);
+    SDL_Window *window = SDL_CreateWindow("ナナ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width * contentScale, height * contentScale, SDL_WINDOW_OPENGL);
     if (window == nullptr) {
-        exit(1);
+        cout << "SDL create window failed with error: " << SDL_GetError() << endl;
+        exit(1337);
     }
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     if (renderer == nullptr) {
-        exit(1);
+        cout << "SDL create renderer failed with error: " << SDL_GetError() << endl;
+        exit(1337);
     }
-    SDL_RenderSetScale(renderer, scale, scale);
+    SDL_RenderSetScale(renderer, contentScale, contentScale);
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     uint32_t format;
     SDL_QueryTexture(texture, &format, nullptr, nullptr, nullptr);
@@ -85,12 +108,13 @@ int main(int argc, char const *argv[])
             if (SDL_LockTexture(texture, nullptr, (void**)&pixels, &pitch) > 0) {
                 exit(1);
             }
-            for (int x = 0; x < width; x++) {
+            for (int x = 48; x < width - 48; x++) {
                 for (int y = 0; y < height; y++) {
                     uint32_t pixelPosition = y * (pitch / sizeof(unsigned int)) + x;
-                    uint8_t r = ppuController.screenData[x][y][0];
-                    uint8_t g = ppuController.screenData[x][y][1];
-                    uint8_t b = ppuController.screenData[x][y][2];
+                    uint8_t screenDataPositionX = x - 48;
+                    uint8_t r = ppuController.screenData[screenDataPositionX][y][0];
+                    uint8_t g = ppuController.screenData[screenDataPositionX][y][1];
+                    uint8_t b = ppuController.screenData[screenDataPositionX][y][2];
                     uint8_t rgb[4] = {r, g, b, 0xFF};
                     uint32_t color = 0;
                     memcpy(&color, rgb, sizeof(rgb));
@@ -98,8 +122,14 @@ int main(int argc, char const *argv[])
                 }
             }
             SDL_UnlockTexture(texture);
-            SDL_RenderClear(renderer);
-            SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+            if (SDL_RenderClear(renderer) != 0) {
+                cout << "SDL render clear failed with error: " << SDL_GetError() << endl;
+                exit(1337);
+            }
+            if (SDL_RenderCopy(renderer, texture, nullptr, nullptr) != 0) {
+                cout << "SDL render clear failed with error: " << SDL_GetError() << endl;
+                exit(1337);
+            }
             SDL_RenderPresent(renderer);
             initTicks = SDL_GetTicks();
         }
