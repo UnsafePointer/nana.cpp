@@ -74,7 +74,7 @@ int main(int argc, char const *argv[])
         cout << "SDL init failed with error: " << SDL_GetError() << endl;
         exit(1337);
     }
-    SDL_Window *window = SDL_CreateWindow("ナナ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width * contentScale, height * contentScale, SDL_WINDOW_OPENGL);
+    SDL_Window *window = SDL_CreateWindow("ナナ.cpp", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width * contentScale, height * contentScale, SDL_WINDOW_OPENGL);
     if (window == nullptr) {
         cout << "SDL create window failed with error: " << SDL_GetError() << endl;
         exit(1337);
