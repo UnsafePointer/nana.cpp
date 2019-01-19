@@ -14,7 +14,7 @@ enum cartridge_type_t {
 
 class MemoryController {
 private:
-    uint8_t cartridge[0x200000];
+    uint8_t cartridge[0x20000];
     uint8_t ram[0x8000];
     uint8_t rom[0x10000];
     cartridge_type_t cartridgeType;
